@@ -1,0 +1,24 @@
+# Week 4 – OraEarn
+
+## Role
+Database Administrator (DBA) / Tester
+
+## Week 4 Focus
+Project and database structure.
+
+## Work Completed
+- Reviewed OraEarn project requirements.
+- Identified database entities and relationships.
+- Prepared the preliminary database structure.
+- Reviewed primary keys, foreign keys and normalisation.
+- Planned the OraEarn ER diagram.
+- Planned conversion of the ER diagram into SQL Server tables.
+- Identified initial database testing and data-integrity checks.
+
+## Next Step
+- Finalise the ER diagram with the team.
+- Create the SQL Server database in SSMS.
+- Create and test the tables and relationships.
+- Add sample data.
+- Test CRUD queries and joins.
+- Prepare for application/database integration.
