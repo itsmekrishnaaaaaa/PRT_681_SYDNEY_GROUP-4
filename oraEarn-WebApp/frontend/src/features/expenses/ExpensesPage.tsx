@@ -42,7 +42,7 @@ type ExpenseFields = 'categoryId' | 'amount' | 'date' | '_form';
 
 function formatExpenseDate(date: string) {
   const d = new Date(date);
-  return d.toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+  return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: '2-digit' });
 }
 
 export function ExpensesPage() {
@@ -226,8 +226,8 @@ export function ExpensesPage() {
                       <TableRow>
                         <TableHead>Date</TableHead>
                         <TableHead>Category</TableHead>
-                        <TableHead>Kind</TableHead>
-                        <TableHead>Payment</TableHead>
+                        <TableHead className="hidden md:table-cell">Kind</TableHead>
+                        <TableHead className="hidden md:table-cell">Payment</TableHead>
                         <TableHead>Amount</TableHead>
                         <TableHead />
                       </TableRow>
@@ -248,10 +248,10 @@ export function ExpensesPage() {
                         </TableRow>
                       ) : filteredExpenses.map((expense) => (
                         <TableRow key={expense.id}>
-                          <TableCell className="font-medium whitespace-nowrap">{formatExpenseDate(expense.date)}</TableCell>
-                          <TableCell>{expense.categoryTitle}</TableCell>
-                          <TableCell><Badge variant="outline">{expenseKindLabel(expense.expenseKind)}</Badge></TableCell>
-                          <TableCell className="text-muted-foreground">{expense.paymentMethod}</TableCell>
+                          <TableCell className="whitespace-nowrap font-medium">{formatExpenseDate(expense.date)}</TableCell>
+                          <TableCell className="max-w-[8rem] truncate sm:max-w-none">{expense.categoryTitle}</TableCell>
+                          <TableCell className="hidden md:table-cell"><Badge variant="outline">{expenseKindLabel(expense.expenseKind)}</Badge></TableCell>
+                          <TableCell className="hidden text-muted-foreground md:table-cell">{expense.paymentMethod}</TableCell>
                           <TableCell className="font-medium">{money(expense.amount)}</TableCell>
                           <TableCell>
                             <Button variant="ghost" size="icon" onClick={() => void deleteExpense(expense.id).then(load)}>

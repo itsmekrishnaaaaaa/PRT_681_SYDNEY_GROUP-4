@@ -251,7 +251,7 @@ export function SavingsGoalsPage() {
                         </p>
                       )}
                       {goal.status !== 'Completed' && (
-                        <div className="flex gap-2 pt-1">
+                        <div className="flex flex-col gap-2 pt-1 sm:flex-row">
                           <Input
                             type="number"
                             min="0"
@@ -260,7 +260,7 @@ export function SavingsGoalsPage() {
                             value={contributeAmounts[goal.id] ?? ''}
                             onChange={(e) => setContributeAmounts((a) => ({ ...a, [goal.id]: e.target.value }))}
                           />
-                          <Button type="button" variant="secondary" onClick={() => void handleContribute(goal.id)}>Add</Button>
+                          <Button type="button" variant="secondary" className="sm:w-auto" onClick={() => void handleContribute(goal.id)}>Add</Button>
                         </div>
                       )}
                     </CardContent>

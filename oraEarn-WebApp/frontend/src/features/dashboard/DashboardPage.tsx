@@ -65,13 +65,13 @@ export function DashboardPage() {
         description="Your personal command centre — earnings, spending, savings progress, and visa compliance in one place."
         action={
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm" onClick={() => downloadAnalyticsExcel(analytics)}>
+            <Button variant="outline" size="sm" className="flex-1 sm:flex-none" onClick={() => downloadAnalyticsExcel(analytics)}>
               <FileSpreadsheet className="h-4 w-4" />
-              Download Excel
+              Excel
             </Button>
-            <Button variant="outline" size="sm" onClick={() => downloadAnalyticsPdf(analytics)}>
+            <Button variant="outline" size="sm" className="flex-1 sm:flex-none" onClick={() => downloadAnalyticsPdf(analytics)}>
               <FileText className="h-4 w-4" />
-              Download PDF
+              PDF
             </Button>
           </div>
         }

@@ -32,7 +32,7 @@ export function StatCard({ icon: Icon, label, value, hint, tone = 'violet', clas
           {trend}
         </div>
         <CardDescription className="pt-2">{label}</CardDescription>
-        <CardTitle className="text-2xl tabular-nums">{value}</CardTitle>
+        <CardTitle className="break-words text-xl tabular-nums sm:text-2xl">{value}</CardTitle>
       </CardHeader>
       {hint && (
         <CardContent className="pt-0">

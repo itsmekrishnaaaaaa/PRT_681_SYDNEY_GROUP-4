@@ -37,7 +37,7 @@ export function Tabs({
 
 export function TabsList({ className, children }: { className?: string; children: ReactNode }) {
   return (
-    <div className={cn('inline-flex h-9 items-center rounded-lg border bg-muted p-1 text-muted-foreground', className)}>
+    <div className={cn('flex w-full min-w-0 items-center overflow-x-auto rounded-lg border bg-muted p-1 text-muted-foreground sm:inline-flex sm:w-auto sm:h-9', className)}>
       {children}
     </div>
   );
@@ -53,7 +53,7 @@ export function TabsTrigger({ value, className, children }: { value: string; cla
       role="tab"
       aria-selected={active}
       className={cn(
-        'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium transition-all',
+        'inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium transition-all sm:flex-none sm:py-1',
         active ? 'bg-background text-foreground shadow-sm' : 'hover:text-foreground',
         className,
       )}

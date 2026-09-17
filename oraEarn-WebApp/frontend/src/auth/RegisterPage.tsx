@@ -180,7 +180,7 @@ export function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen grid place-items-center p-4 bg-background">
+    <div className="grid min-h-dvh place-items-center bg-background p-3 sm:p-4">
       <Card className="w-full max-w-2xl border-t-4 border-t-foreground">
         <CardHeader className="space-y-3">
           <div className="flex items-center gap-3">

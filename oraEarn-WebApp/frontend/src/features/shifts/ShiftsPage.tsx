@@ -90,21 +90,21 @@ export function ShiftsPage() {
         </CardHeader>
         <CardContent>
           {activeSession ? (
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="flex items-center gap-2 rounded-lg bg-background border px-3 py-2 text-sm">
-                <Play className="h-4 w-4" />
-                <span><strong>{activeSession.jobTitle}</strong> · started {activeSession.startTime.slice(0, 5)}</span>
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+              <div className="flex min-w-0 items-center gap-2 rounded-lg bg-background border px-3 py-2 text-sm">
+                <Play className="h-4 w-4 shrink-0" />
+                <span className="min-w-0 truncate"><strong>{activeSession.jobTitle}</strong> · started {activeSession.startTime.slice(0, 5)}</span>
               </div>
               {activeSession.breakStartedAt ? (
-                <Button variant="secondary" className="gap-2" onClick={() => void endBreak().then(setActiveSession)}>
+                <Button variant="secondary" className="w-full gap-2 sm:w-auto" onClick={() => void endBreak().then(setActiveSession)}>
                   <Play className="h-4 w-4" /> End break
                 </Button>
               ) : (
-                <Button variant="secondary" className="gap-2" onClick={() => void startBreak().then(setActiveSession)}>
+                <Button variant="secondary" className="w-full gap-2 sm:w-auto" onClick={() => void startBreak().then(setActiveSession)}>
                   <Coffee className="h-4 w-4" /> Start break
                 </Button>
               )}
-              <Button className="gap-2" onClick={() => void clockOut().then(() => { setActiveSession(null); return load(); })}>
+              <Button className="w-full gap-2 sm:w-auto" onClick={() => void clockOut().then(() => { setActiveSession(null); return load(); })}>
                 <LogOutIcon className="h-4 w-4" /> Clock out
               </Button>
             </div>
@@ -116,12 +116,12 @@ export function ShiftsPage() {
               action={<Button variant="outline" size="sm" onClick={() => window.location.assign('/jobs')}>Go to Jobs</Button>}
             />
           ) : (
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
               <Select value={clockInJobId} onValueChange={setClockInJobId}>
-                <SelectTrigger className="w-[220px]"><SelectValue placeholder="Select job" /></SelectTrigger>
+                <SelectTrigger className="w-full sm:w-[220px]"><SelectValue placeholder="Select job" /></SelectTrigger>
                 <SelectContent>{jobs.map((j) => <SelectItem key={j.id} value={j.id}>{j.title}</SelectItem>)}</SelectContent>
               </Select>
-              <Button className="gap-2" disabled={!clockInJobId} onClick={() => void clockIn(clockInJobId).then(setActiveSession).catch((e) => setError(getErrorMessage(e)))}>
+              <Button className="w-full gap-2 sm:w-auto" disabled={!clockInJobId} onClick={() => void clockIn(clockInJobId).then(setActiveSession).catch((e) => setError(getErrorMessage(e)))}>
                 <LogIn className="h-4 w-4" /> Clock in
               </Button>
             </div>

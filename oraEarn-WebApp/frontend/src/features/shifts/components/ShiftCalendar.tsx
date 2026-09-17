@@ -42,25 +42,35 @@ export function ShiftCalendar({ viewDate, shifts, activeSession, onViewDateChang
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <Button variant="outline" onClick={() => onViewDateChange(addMonths(viewDate, -1))}>Previous</Button>
-        <h3 className="text-lg font-semibold">{viewDate.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</h3>
-        <Button variant="outline" onClick={() => onViewDateChange(addMonths(viewDate, 1))}>Next</Button>
+      <div className="flex items-center justify-between gap-2">
+        <Button variant="outline" size="sm" className="px-3" onClick={() => onViewDateChange(addMonths(viewDate, -1))}>
+          Prev
+        </Button>
+        <h3 className="min-w-0 truncate text-center text-base font-semibold sm:text-lg">
+          {viewDate.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
+        </h3>
+        <Button variant="outline" size="sm" className="px-3" onClick={() => onViewDateChange(addMonths(viewDate, 1))}>
+          Next
+        </Button>
       </div>
 
-      <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
+      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-4 w-4 rounded bg-foreground ring-1 ring-foreground" />
-          Day with completed shift(s)
+          <span className="inline-block h-3.5 w-3.5 rounded bg-foreground ring-1 ring-foreground" />
+          Completed
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-4 w-4 rounded bg-muted ring-1 ring-border" />
-          Day with shift not finished yet
+          <span className="inline-block h-3.5 w-3.5 rounded bg-muted ring-1 ring-border" />
+          Not finished
         </span>
       </div>
-      <div className="grid grid-cols-7 gap-2">
+      <div className="-mx-1 overflow-x-auto px-1">
+        <div className="grid min-w-[20rem] grid-cols-7 gap-0.5 sm:min-w-0 sm:gap-2">
         {weekdayLabels.map((label) => (
-          <div key={label} className="text-center text-xs font-medium text-muted-foreground py-1">{label}</div>
+          <div key={label} className="py-1 text-center text-[10px] font-medium text-muted-foreground sm:text-xs">
+            <span className="sm:hidden">{label[0]}</span>
+            <span className="hidden sm:inline">{label}</span>
+          </div>
         ))}
 
         {days.map((day) => {
@@ -74,6 +84,7 @@ export function ShiftCalendar({ viewDate, shifts, activeSession, onViewDateChang
           const allShiftsDone =
             dayShifts.length > 0 && dayShifts.every(isShiftDone) && !liveSessionToday;
           const dayNotDone = liveSessionToday || dayShifts.some((s) => !isShiftDone(s));
+          const extraCount = dayShifts.length + (liveSessionToday ? 1 : 0);
 
           return (
             <button
@@ -81,7 +92,7 @@ export function ShiftCalendar({ viewDate, shifts, activeSession, onViewDateChang
               type="button"
               onClick={() => onDayClick(day)}
               className={cn(
-                'min-h-24 rounded-lg border p-2 text-left transition',
+                'min-h-11 rounded-md border p-1 text-left transition sm:min-h-20 sm:rounded-lg sm:p-2 md:min-h-24',
                 !hasShifts && 'hover:border-primary/50 hover:bg-accent/40',
                 hasShifts && allShiftsDone && 'border-foreground bg-foreground text-background hover:bg-foreground/90',
                 hasShifts && dayNotDone && 'border-border bg-muted hover:bg-accent',
@@ -92,13 +103,13 @@ export function ShiftCalendar({ viewDate, shifts, activeSession, onViewDateChang
               )}
             >
               <div className={cn(
-                'mb-1 text-sm font-semibold',
+                'text-xs font-semibold sm:mb-1 sm:text-sm',
                 allShiftsDone && 'text-background',
                 dayNotDone && hasShifts && 'text-foreground',
               )}>
                 {day.getDate()}
               </div>
-              <div className="space-y-1">
+              <div className="hidden space-y-1 sm:block">
                 {liveSessionToday && (
                   <div className="truncate rounded bg-background/70 px-1.5 py-0.5 font-medium text-[10px] text-foreground leading-tight">
                     {activeSession.startTime.slice(0, 5)} · Live
@@ -118,9 +129,18 @@ export function ShiftCalendar({ viewDate, shifts, activeSession, onViewDateChang
                   </div>
                 ))}
               </div>
+              {hasShifts && (
+                <div className={cn(
+                  'mt-0.5 text-[9px] font-medium sm:hidden',
+                  allShiftsDone ? 'text-background/80' : 'text-muted-foreground',
+                )}>
+                  {extraCount}
+                </div>
+              )}
             </button>
           );
         })}
+        </div>
       </div>
     </div>
   );

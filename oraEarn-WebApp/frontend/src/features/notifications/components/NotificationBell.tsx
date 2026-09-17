@@ -126,8 +126,10 @@ export function NotificationBell({
         <div
           ref={panelRef}
           className={cn(
-            'absolute z-50 mt-2 w-[min(100vw-2rem,24rem)] overflow-hidden rounded-xl border bg-background shadow-xl',
-            placement === 'bottom-start' ? 'left-0 top-full' : 'right-0 top-full',
+            'z-50 overflow-hidden rounded-xl border bg-background shadow-xl',
+            'fixed inset-x-3 top-[calc(3.75rem+env(safe-area-inset-top))] lg:absolute lg:inset-x-auto lg:top-full lg:mt-2',
+            'w-auto max-h-[min(70dvh,28rem)] lg:w-[min(calc(100vw-1.5rem),24rem)]',
+            placement === 'bottom-start' ? 'lg:left-0' : 'lg:right-0',
           )}
         >
           <div className="flex items-center justify-between border-b px-4 py-3">

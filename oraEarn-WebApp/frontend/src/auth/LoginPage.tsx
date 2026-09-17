@@ -56,7 +56,14 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2">
+    <div className="flex min-h-dvh flex-col lg:grid lg:grid-cols-2">
+      <div className="flex w-full items-center gap-3 bg-primary px-4 py-3 text-primary-foreground lg:hidden">
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-foreground/15 font-bold">OE</div>
+        <div className="min-w-0">
+          <p className="font-semibold leading-tight">OraEarn</p>
+          <p className="truncate text-xs text-primary-foreground/80">Earn smarter in Australia</p>
+        </div>
+      </div>
       <div className="hidden flex-col justify-between bg-primary p-10 text-primary-foreground lg:flex">
         <div>
           <div className="flex items-center gap-3">
@@ -81,7 +88,7 @@ export function LoginPage() {
         </ul>
       </div>
 
-      <div className="grid place-items-center p-6">
+      <div className="flex flex-1 items-center justify-center p-4 sm:p-6">
         <Card className="w-full max-w-md border-0 shadow-xl lg:border">
           <CardHeader className="text-center lg:text-left">
             <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground lg:mx-0">

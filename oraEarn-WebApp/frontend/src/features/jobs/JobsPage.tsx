@@ -143,7 +143,7 @@ export function JobsPage() {
                   <TableRow>
                     <TableHead>Title</TableHead>
                     <TableHead>Rate</TableHead>
-                    <TableHead><span className="sr-only">Joined</span><Calendar className="h-3.5 w-3.5 inline" /></TableHead>
+                    <TableHead className="hidden sm:table-cell"><span className="sr-only">Joined</span><Calendar className="h-3.5 w-3.5 inline" /></TableHead>
                     <TableHead />
                   </TableRow>
                 </TableHeader>
@@ -152,7 +152,7 @@ export function JobsPage() {
                     <TableRow key={job.id}>
                       <TableCell className="font-medium">{job.title}</TableCell>
                       <TableCell><Badge variant="secondary">{money(job.hourlyRate)}/hr</Badge></TableCell>
-                      <TableCell className="text-muted-foreground text-sm">{new Date(job.dateOfJoin).toLocaleDateString()}</TableCell>
+                      <TableCell className="hidden text-muted-foreground text-sm sm:table-cell">{new Date(job.dateOfJoin).toLocaleDateString()}</TableCell>
                       <TableCell>
                         <Button variant="ghost" size="icon" title="Remove job" onClick={() => void deleteJob(job.id).then(load)}>
                           <Trash2 className="h-4 w-4" />

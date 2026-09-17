@@ -21,18 +21,23 @@ export function ChatWidget({
   const [open, setOpen] = useState(false);
   const chat = useChat({ onSend, welcomeMessage });
 
-  const corner = position === 'bottom-left' ? 'left-4 sm:left-6' : 'right-4 sm:right-6';
+  const corner = position === 'bottom-left'
+    ? 'left-3 sm:left-6'
+    : 'right-3 sm:right-6';
+  const launcherBottom = 'bottom-[calc(4.75rem+env(safe-area-inset-bottom))] lg:bottom-6';
+  const panelBottom = 'bottom-[calc(9.5rem+env(safe-area-inset-bottom))] lg:bottom-24';
 
   return (
     <div className={cn('pointer-events-none fixed inset-0 z-50', className)} aria-live="polite">
       {/* Pop-out panel */}
       <div
         className={cn(
-          'pointer-events-auto fixed bottom-20 flex w-[min(calc(100vw-2rem),380px)] flex-col overflow-hidden rounded-2xl border bg-card shadow-2xl transition-all duration-300 sm:bottom-24 sm:w-[400px]',
+          'pointer-events-auto fixed flex w-[min(calc(100vw-1.5rem),380px)] flex-col overflow-hidden rounded-2xl border bg-card shadow-2xl transition-all duration-300 sm:w-[400px]',
+          panelBottom,
           corner,
           open ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0',
         )}
-        style={{ height: 'min(560px, calc(100vh - 7rem))' }}
+        style={{ height: 'min(560px, calc(100dvh - 14rem))' }}
         role="dialog"
         aria-label={`${title} chat`}
         aria-hidden={!open}
@@ -79,7 +84,8 @@ export function ChatWidget({
         type="button"
         size="icon"
         className={cn(
-          'pointer-events-auto fixed bottom-4 h-14 w-14 rounded-full shadow-lg transition-transform hover:scale-105 sm:bottom-6',
+          'pointer-events-auto fixed h-12 w-12 rounded-full shadow-lg transition-transform hover:scale-105 sm:h-14 sm:w-14',
+          launcherBottom,
           'bg-primary text-primary-foreground hover:bg-primary/90',
           corner,
         )}

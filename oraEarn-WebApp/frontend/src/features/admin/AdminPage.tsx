@@ -84,7 +84,7 @@ export function AdminPage() {
           <CardHeader><CardTitle>User earnings</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             {analytics.users.map((user) => (
-              <div key={user.id} className="flex items-center justify-between border-b border-border pb-2 text-sm">
+              <div key={user.id} className="flex flex-col gap-1 border-b border-border pb-2 text-sm sm:flex-row sm:items-center sm:justify-between">
                 <span>{user.firstName} {user.lastName}</span>
                 <span className="font-medium">{money(user.totalEarnings)} · {user.shiftCount} shifts</span>
               </div>

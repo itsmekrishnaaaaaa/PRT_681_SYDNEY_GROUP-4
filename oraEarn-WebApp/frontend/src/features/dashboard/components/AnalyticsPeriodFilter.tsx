@@ -25,7 +25,7 @@ export function AnalyticsPeriodFilter({ value, onChange, className }: Props) {
               <TabsTrigger key={p.key} value={p.key} className="gap-1.5">
                 {p.label}
                 {p.recommended && (
-                  <Badge variant="secondary" className="h-5 px-1.5 text-[10px] font-normal">
+                  <Badge variant="secondary" className="hidden h-5 px-1.5 text-[10px] font-normal sm:inline-flex">
                     Recommended
                   </Badge>
                 )}

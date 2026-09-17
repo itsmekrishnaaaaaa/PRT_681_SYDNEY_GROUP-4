@@ -14,15 +14,15 @@ type PageHeaderProps = {
 export function PageHeader({ title, description, icon: Icon, action, className, badge }: PageHeaderProps) {
   return (
     <div className={cn('mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between', className)}>
-      <div className="flex gap-4">
+      <div className="flex min-w-0 gap-4">
         {Icon && (
           <div className="hidden sm:flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
             <Icon className="h-6 w-6" />
           </div>
         )}
-        <div>
+        <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+            <h1 className="text-xl font-bold tracking-tight sm:text-2xl">{title}</h1>
             {badge}
           </div>
           {description && (
@@ -30,7 +30,7 @@ export function PageHeader({ title, description, icon: Icon, action, className, 
           )}
         </div>
       </div>
-      {action && <div className="shrink-0">{action}</div>}
+      {action && <div className="w-full shrink-0 sm:w-auto">{action}</div>}
     </div>
   );
 }
