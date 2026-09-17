@@ -98,7 +98,7 @@ export function DashboardPage() {
           value={money(analytics.netBalance)}
           hint="Earnings minus expenses in period"
           tone={netPositive ? 'emerald' : 'rose'}
-          trend={netPositive ? <ArrowUpRight className="h-4 w-4 text-emerald-600" /> : <ArrowDownRight className="h-4 w-4 text-rose-600" />}
+          trend={netPositive ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
         />
         <StatCard icon={TrendingUp} label="Earnings" value={money(analytics.totalEarnings)} hint={`${analytics.shiftCount} shifts · ${analytics.totalHours.toFixed(1)} hrs`} tone="violet" />
         <StatCard icon={Receipt} label="Expenses" value={money(analytics.totalExpenses)} hint={`${analytics.expenseCount} transactions`} tone="amber" />

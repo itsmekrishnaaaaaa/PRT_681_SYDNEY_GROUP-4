@@ -61,7 +61,7 @@ export function TimelineChart({ title, description, data, mode, className }: Tim
                 <div
                   className={cn(
                     'w-full max-w-10 rounded-t-md transition-all',
-                    mode === 'shifts' ? 'bg-violet-600' : 'bg-amber-500',
+                    mode === 'shifts' ? 'bg-foreground' : 'bg-muted-foreground',
                   )}
                   style={{ height: `${pct}%` }}
                   title={`${d.dayLabel} · ${d.date}`}

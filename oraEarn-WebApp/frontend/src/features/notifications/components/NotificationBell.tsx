@@ -28,7 +28,7 @@ const iconMap = {
 
 const styleMap = {
   error: 'border-destructive/30 bg-destructive/5',
-  warning: 'border-amber-500/30 bg-amber-50/80',
+  warning: 'border-foreground/30 bg-muted',
   info: 'border-border bg-muted/40',
 };
 
@@ -187,15 +187,15 @@ export function NotificationBell({
                       key={n.id}
                       className={cn(
                         'relative px-4 py-3 transition-colors',
-                        !n.isRead && 'bg-violet-50/50',
+                        !n.isRead && 'bg-muted/70',
                         styleMap[n.severity],
                       )}
                     >
                       {!n.isRead && (
-                        <span className="absolute left-1.5 top-4 h-2 w-2 rounded-full bg-violet-600" />
+                        <span className="absolute left-1.5 top-4 h-2 w-2 rounded-full bg-foreground" />
                       )}
                       <div className="flex gap-3 pl-2">
-                        <Icon className={cn('mt-0.5 h-4 w-4 shrink-0', n.severity === 'error' && 'text-destructive', n.severity === 'warning' && 'text-amber-700')} />
+                        <Icon className={cn('mt-0.5 h-4 w-4 shrink-0', n.severity === 'error' && 'text-foreground', n.severity === 'warning' && 'text-muted-foreground')} />
                         <div className="min-w-0 flex-1 space-y-1">
                           <div className="flex items-start justify-between gap-2">
                             <p className={cn('font-medium text-sm leading-tight', !n.isRead && 'text-foreground')}>

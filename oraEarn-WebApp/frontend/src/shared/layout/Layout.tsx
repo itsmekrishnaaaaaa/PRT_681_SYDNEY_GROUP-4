@@ -31,13 +31,13 @@ export function Layout() {
   return (
     <div className="min-h-screen bg-muted/30 lg:grid lg:grid-cols-[280px_1fr]">
       <aside className="flex flex-col gap-6 border-b bg-card p-4 lg:border-b-0 lg:border-r">
-        <div className="flex items-center gap-3 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-700 p-3 text-white shadow-md">
-          <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-white/15 font-bold backdrop-blur">
+        <div className="flex items-center gap-3 rounded-xl bg-primary p-3 text-primary-foreground">
+          <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary-foreground/15 font-bold">
             OE
           </div>
           <div>
             <p className="font-semibold tracking-tight">OraEarn</p>
-            <p className="flex items-center gap-1 text-xs text-white/80">
+            <p className="flex items-center gap-1 text-xs text-primary-foreground/80">
               <Sparkles className="h-3 w-3" />
               {isAdmin ? 'Admin portal' : 'Track shifts. Earn smarter.'}
             </p>

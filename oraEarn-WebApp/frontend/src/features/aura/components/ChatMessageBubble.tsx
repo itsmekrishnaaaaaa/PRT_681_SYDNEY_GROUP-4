@@ -17,7 +17,7 @@ export function ChatMessageBubble({ message, userInitials, assistantName }: Prop
       <Avatar className="h-8 w-8 mt-0.5">
         <AvatarFallback
           className={cn(
-            isUser ? 'bg-primary text-primary-foreground' : 'bg-violet-600 text-white',
+            isUser ? 'bg-primary text-primary-foreground' : 'bg-foreground text-background',
           )}
         >
           {isUser ? userInitials : <Bot className="h-4 w-4" aria-hidden />}

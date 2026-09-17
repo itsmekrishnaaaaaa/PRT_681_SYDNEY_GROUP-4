@@ -79,20 +79,20 @@ export function ShiftsPage() {
         <VisaComplianceCard compliance={analytics.visaCompliance} />
       )}
 
-      <Card className="border-violet-200/60 bg-gradient-to-br from-violet-50/50 to-white">
+      <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Timer className="h-5 w-5 text-violet-600" />
+            <Timer className="h-5 w-5" />
             Live shift session
-            {activeSession && <Badge className="bg-emerald-600">On shift</Badge>}
+            {activeSession && <Badge>On shift</Badge>}
           </CardTitle>
           <CardDescription>Clock in when you start work — breaks and clock-out create an accurate shift record.</CardDescription>
         </CardHeader>
         <CardContent>
           {activeSession ? (
             <div className="flex flex-wrap items-center gap-3">
-              <div className="flex items-center gap-2 rounded-lg bg-white border px-3 py-2 text-sm">
-                <Play className="h-4 w-4 text-emerald-600" />
+              <div className="flex items-center gap-2 rounded-lg bg-background border px-3 py-2 text-sm">
+                <Play className="h-4 w-4" />
                 <span><strong>{activeSession.jobTitle}</strong> · started {activeSession.startTime.slice(0, 5)}</span>
               </div>
               {activeSession.breakStartedAt ? (

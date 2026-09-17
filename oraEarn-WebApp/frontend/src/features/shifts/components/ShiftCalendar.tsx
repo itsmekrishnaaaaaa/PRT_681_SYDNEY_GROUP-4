@@ -50,11 +50,11 @@ export function ShiftCalendar({ viewDate, shifts, activeSession, onViewDateChang
 
       <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-4 w-4 rounded bg-emerald-100 ring-1 ring-emerald-200" />
+          <span className="inline-block h-4 w-4 rounded bg-foreground ring-1 ring-foreground" />
           Day with completed shift(s)
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-4 w-4 rounded bg-red-100 ring-1 ring-red-200" />
+          <span className="inline-block h-4 w-4 rounded bg-muted ring-1 ring-border" />
           Day with shift not finished yet
         </span>
       </div>
@@ -83,24 +83,24 @@ export function ShiftCalendar({ viewDate, shifts, activeSession, onViewDateChang
               className={cn(
                 'min-h-24 rounded-lg border p-2 text-left transition',
                 !hasShifts && 'hover:border-primary/50 hover:bg-accent/40',
-                hasShifts && allShiftsDone && 'border-emerald-300 bg-emerald-100 hover:bg-emerald-100/90',
-                hasShifts && dayNotDone && 'border-red-300 bg-red-100 hover:bg-red-100/90',
+                hasShifts && allShiftsDone && 'border-foreground bg-foreground text-background hover:bg-foreground/90',
+                hasShifts && dayNotDone && 'border-border bg-muted hover:bg-accent',
                 outsideMonth && 'opacity-50',
                 today && !hasShifts && 'border-primary ring-1 ring-primary/30',
-                today && allShiftsDone && 'ring-2 ring-emerald-400/50',
-                today && dayNotDone && 'ring-2 ring-red-400/50',
+                today && allShiftsDone && 'ring-2 ring-foreground/40',
+                today && dayNotDone && 'ring-2 ring-muted-foreground/40',
               )}
             >
               <div className={cn(
                 'mb-1 text-sm font-semibold',
-                allShiftsDone && 'text-emerald-900',
-                dayNotDone && hasShifts && 'text-red-900',
+                allShiftsDone && 'text-background',
+                dayNotDone && hasShifts && 'text-foreground',
               )}>
                 {day.getDate()}
               </div>
               <div className="space-y-1">
                 {liveSessionToday && (
-                  <div className="truncate rounded bg-white/60 px-1.5 py-0.5 font-medium text-[10px] text-red-900 leading-tight">
+                  <div className="truncate rounded bg-background/70 px-1.5 py-0.5 font-medium text-[10px] text-foreground leading-tight">
                     {activeSession.startTime.slice(0, 5)} · Live
                   </div>
                 )}
@@ -108,7 +108,10 @@ export function ShiftCalendar({ viewDate, shifts, activeSession, onViewDateChang
                   <div
                     key={shift.id}
                     onClick={(e) => { e.stopPropagation(); onShiftClick(shift); }}
-                    className="truncate rounded bg-white/60 px-1.5 py-0.5 text-[10px] font-medium leading-tight text-foreground/90"
+                    className={cn(
+                      'truncate rounded px-1.5 py-0.5 text-[10px] font-medium leading-tight',
+                      allShiftsDone ? 'bg-background/20 text-background' : 'bg-background/80 text-foreground',
+                    )}
                     title={isShiftDone(shift) ? 'Shift completed' : 'Shift not finished yet'}
                   >
                     {shift.startTime.slice(0, 5)} · {money(shift.totalEarned)}

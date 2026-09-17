@@ -22,31 +22,42 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
 }
 
+/* Single source of truth: black and white only. Change these, not page classes. */
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.1 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.1 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.1 0 0);
-  --primary: oklch(0.1 0 0);
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.96 0 0);
-  --secondary-foreground: oklch(0.1 0 0);
-  --muted: oklch(0.96 0 0);
-  --muted-foreground: oklch(0.45 0 0);
-  --accent: oklch(0.94 0 0);
-  --accent-foreground: oklch(0.1 0 0);
-  --destructive: oklch(0.2 0 0);
-  --border: oklch(0 0 0 / 12%);
-  --input: oklch(0 0 0 / 10%);
-  --ring: oklch(0.2 0 0);
+  --radius: 0.5rem;
+  --background: #ffffff;
+  --foreground: #000000;
+  --card: #ffffff;
+  --card-foreground: #000000;
+  --popover: #ffffff;
+  --popover-foreground: #000000;
+  --primary: #000000;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f4f4;
+  --secondary-foreground: #000000;
+  --muted: #f0f0f0;
+  --muted-foreground: #525252;
+  --accent: #e8e8e8;
+  --accent-foreground: #000000;
+  --destructive: #111111;
+  --destructive-foreground: #ffffff;
+  --border: #d0d0d0;
+  --input: #d0d0d0;
+  --ring: #000000;
+  --success: #000000;
+  --warning: #6b6b6b;
+  --chart-1: #000000;
+  --chart-2: #6b6b6b;
 }
 
 @layer base {
@@ -55,6 +66,8 @@
   }
   body {
     @apply bg-background text-foreground min-h-screen antialiased;
-    background-image: none;
+  }
+  a {
+    @apply text-foreground underline-offset-2;
   }
 }

@@ -55,8 +55,8 @@ export function ChatConversation({
           ))}
           {loading && (
             <div className="flex gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-600/10">
-                <Sparkles className="h-4 w-4 animate-pulse text-violet-600" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
+                <Sparkles className="h-4 w-4 animate-pulse text-foreground" />
               </div>
               <ChatTypingIndicator />
             </div>

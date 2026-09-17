@@ -180,13 +180,13 @@ export function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen grid place-items-center p-4 bg-gradient-to-b from-[#00008B]/5 to-background">
-      <Card className="w-full max-w-2xl border-t-4 border-t-[#00008B]">
+    <div className="min-h-screen grid place-items-center p-4 bg-background">
+      <Card className="w-full max-w-2xl border-t-4 border-t-foreground">
         <CardHeader className="space-y-3">
           <div className="flex items-center gap-3">
             <span className="text-3xl leading-none" aria-hidden>🇦🇺</span>
             <div>
-              <CardTitle className="flex items-center gap-2 text-[#00008B]">
+              <CardTitle className="flex items-center gap-2 text-foreground">
                 <ShieldCheck className="h-5 w-5" /> Register — Australia
               </CardTitle>
               <p className="text-xs text-muted-foreground mt-0.5">OraEarn · Identity verification required</p>            </div>
@@ -197,11 +197,11 @@ export function RegisterPage() {
         </CardHeader>
         <CardContent>
           <FormErrorSummary errors={errors} />
-          {success && <p className="mb-4 text-sm text-green-800 border border-green-200 bg-green-50 rounded-md p-3">{success}</p>}
+          {success && <p className="mb-4 text-sm text-foreground border border-border bg-muted rounded-md p-3">{success}</p>}
 
           <form className="space-y-6" noValidate onSubmit={handleSubmit}>
             <section className="space-y-4">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-[#00008B]">Personal details</h2>
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-foreground">Personal details</h2>
               <div className="grid gap-4 sm:grid-cols-2">
                 <FormField label="Legal first name" error={errors.firstName} required>
                   <Input className={fieldInvalidClass(errors.firstName)} value={form.firstName} onChange={(e) => { setForm({ ...form, firstName: e.target.value }); clearError('firstName'); }} autoComplete="given-name" />
@@ -231,8 +231,8 @@ export function RegisterPage() {
               </div>
             </section>
 
-            <section className="space-y-4 rounded-lg border border-[#00008B]/20 p-4 bg-[#00008B]/[0.03]">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-[#00008B]">Visa & work rights</h2>
+            <section className="space-y-4 rounded-lg border p-4 bg-muted/30">
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-foreground">Visa & work rights</h2>
               <p className="text-xs text-muted-foreground">Per Department of Home Affairs and Fair Work Act requirements.</p>
               <div className="grid gap-4 sm:grid-cols-2">
                 <FormField label="Visa subclass / type" error={errors.visaType} required>
@@ -298,9 +298,9 @@ export function RegisterPage() {
               </div>
             </section>
 
-            <section className="space-y-3 rounded-lg border border-amber-200 bg-amber-50/80 p-4 text-sm">
-              <h2 className="font-semibold text-amber-950">Privacy & declaration (Australian Privacy Act 1988)</h2>
-              <p className="text-xs text-amber-900/90">
+            <section className="space-y-3 rounded-lg border bg-muted p-4 text-sm">
+              <h2 className="font-semibold">Privacy & declaration (Australian Privacy Act 1988)</h2>
+              <p className="text-xs text-muted-foreground">
                 We collect your personal information to verify identity and work eligibility. It is stored securely and used only for account approval and shift tracking. You may request access or correction of your data.
               </p>
               <div>
@@ -319,12 +319,12 @@ export function RegisterPage() {
               </div>
             </section>
 
-            <Button className="w-full bg-[#00008B] hover:bg-[#00008B]/90" type="submit" disabled={submitting}>
+            <Button className="w-full" type="submit" disabled={submitting}>
               {submitting ? 'Submitting…' : 'Submit for admin approval'}
             </Button>
           </form>
           <p className="mt-4 text-sm text-muted-foreground text-center">
-            Already registered? <Link className="text-[#00008B] underline font-medium" to="/login">Sign in</Link>
+            Already registered? <Link className="text-foreground underline font-medium" to="/login">Sign in</Link>
           </p>
         </CardContent>
       </Card>

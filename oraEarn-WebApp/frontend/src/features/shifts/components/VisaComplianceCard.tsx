@@ -29,7 +29,7 @@ export function VisaComplianceCard({ compliance }: { compliance: VisaCompliance 
   }
 
   return (
-    <Card className={compliance.isOverLimit ? 'border-destructive/50' : compliance.isNearLimit ? 'border-amber-500/50' : undefined}>
+    <Card className={compliance.isOverLimit || compliance.isNearLimit ? 'border-foreground' : undefined}>
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-base">
           <ShieldAlert className="h-4 w-4" />

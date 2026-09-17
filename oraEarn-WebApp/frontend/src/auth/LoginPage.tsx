@@ -57,23 +57,23 @@ export function LoginPage() {
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
-      <div className="hidden flex-col justify-between bg-gradient-to-br from-violet-600 to-indigo-800 p-10 text-white lg:flex">
+      <div className="hidden flex-col justify-between bg-primary p-10 text-primary-foreground lg:flex">
         <div>
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/15 font-bold text-lg">OE</div>
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-foreground/15 font-bold text-lg">OE</div>
             <div>
               <p className="font-bold text-xl">OraEarn</p>
-              <p className="flex items-center gap-1 text-sm text-white/80"><Sparkles className="h-3.5 w-3.5" /> Earn smarter in Australia</p>
+              <p className="flex items-center gap-1 text-sm text-primary-foreground/80"><Sparkles className="h-3.5 w-3.5" /> Earn smarter in Australia</p>
             </div>
           </div>
           <h2 className="mt-12 text-3xl font-bold leading-tight">Your shift money,<br />under control.</h2>
-          <p className="mt-4 max-w-md text-white/80 leading-relaxed">
+          <p className="mt-4 max-w-md text-primary-foreground/80 leading-relaxed">
             Built for students and workers — track hours, stay visa-safe, manage expenses, and hit savings goals with Aura AI by your side.
           </p>
         </div>
         <ul className="grid grid-cols-2 gap-3">
           {features.map(({ icon: Icon, text }) => (
-            <li key={text} className="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2.5 text-sm backdrop-blur">
+            <li key={text} className="flex items-center gap-2 rounded-lg bg-primary-foreground/10 px-3 py-2.5 text-sm">
               <Icon className="h-4 w-4 shrink-0" />
               {text}
             </li>
@@ -84,7 +84,7 @@ export function LoginPage() {
       <div className="grid place-items-center p-6">
         <Card className="w-full max-w-md border-0 shadow-xl lg:border">
           <CardHeader className="text-center lg:text-left">
-            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white lg:mx-0">
+            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground lg:mx-0">
               <LogIn className="h-6 w-6" />
             </div>
             <CardTitle className="text-2xl">Welcome back</CardTitle>
@@ -133,7 +133,7 @@ export function LoginPage() {
             </form>
             <p className="mt-6 text-center text-sm text-muted-foreground">
               New here?{' '}
-              <Link className="font-medium text-violet-600 underline underline-offset-2" to="/register">
+              <Link className="font-medium text-foreground underline underline-offset-2" to="/register">
                 Create an account
               </Link>
             </p>

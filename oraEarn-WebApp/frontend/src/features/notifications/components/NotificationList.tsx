@@ -17,7 +17,7 @@ const iconMap = {
 
 const styleMap = {
   error: 'border-destructive/50 bg-destructive/5 text-destructive',
-  warning: 'border-amber-500/50 bg-amber-50 text-amber-900',
+  warning: 'border-foreground/40 bg-muted text-foreground',
   info: 'border-border bg-muted/50 text-foreground',
 };
 

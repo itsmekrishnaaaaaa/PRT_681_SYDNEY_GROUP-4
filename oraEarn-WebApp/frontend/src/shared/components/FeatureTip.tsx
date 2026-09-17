@@ -16,12 +16,12 @@ export function FeatureTip({ title, children, icon: Icon = Lightbulb, variant = 
       className={cn(
         'flex gap-3 rounded-xl border p-4 text-sm',
         variant === 'accent'
-          ? 'border-violet-200 bg-gradient-to-r from-violet-50 to-indigo-50'
+          ? 'border-foreground bg-secondary'
           : 'border-border bg-muted/40',
         className,
       )}
     >
-      <div className={cn('mt-0.5 shrink-0', variant === 'accent' ? 'text-violet-600' : 'text-muted-foreground')}>
+      <div className={cn('mt-0.5 shrink-0', variant === 'accent' ? 'text-foreground' : 'text-muted-foreground')}>
         {variant === 'accent' ? <Sparkles className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
       </div>
       <div className="min-w-0 space-y-0.5">

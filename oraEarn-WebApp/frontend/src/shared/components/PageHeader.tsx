@@ -16,7 +16,7 @@ export function PageHeader({ title, description, icon: Icon, action, className, 
     <div className={cn('mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between', className)}>
       <div className="flex gap-4">
         {Icon && (
-          <div className="hidden sm:flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white shadow-md">
+          <div className="hidden sm:flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
             <Icon className="h-6 w-6" />
           </div>
         )}

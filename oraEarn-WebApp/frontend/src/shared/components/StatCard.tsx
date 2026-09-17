@@ -3,12 +3,12 @@ import { cn } from '@/shared/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 
 const toneStyles = {
-  violet: 'bg-violet-100 text-violet-700',
-  amber: 'bg-amber-100 text-amber-700',
-  emerald: 'bg-emerald-100 text-emerald-700',
-  blue: 'bg-blue-100 text-blue-700',
-  rose: 'bg-rose-100 text-rose-700',
-  slate: 'bg-slate-100 text-slate-700',
+  violet: 'bg-secondary text-foreground',
+  amber: 'bg-secondary text-foreground',
+  emerald: 'bg-primary text-primary-foreground',
+  blue: 'bg-secondary text-foreground',
+  rose: 'bg-muted text-foreground',
+  slate: 'bg-secondary text-foreground',
 } as const;
 
 type StatCardProps = {
@@ -23,7 +23,7 @@ type StatCardProps = {
 
 export function StatCard({ icon: Icon, label, value, hint, tone = 'violet', className, trend }: StatCardProps) {
   return (
-    <Card className={cn('overflow-hidden transition-shadow hover:shadow-md', className)}>
+    <Card className={cn('overflow-hidden', className)}>
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between gap-2">
           <div className={cn('flex h-9 w-9 items-center justify-center rounded-lg', toneStyles[tone])}>

@@ -38,28 +38,28 @@ export function ChatWidget({
         aria-hidden={!open}
       >
         {/* Header */}
-        <div className="flex shrink-0 items-start justify-between gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 px-4 py-3 text-white">
+        <div className="flex shrink-0 items-start justify-between gap-2 bg-primary px-4 py-3 text-primary-foreground">
           <div className="flex min-w-0 items-center gap-2.5">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/20">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-foreground/20">
               <Sparkles className="h-4 w-4" />
             </div>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-1.5">
                 <p className="font-semibold text-sm leading-tight">{title}</p>
                 {badge && (
-                  <Badge variant="secondary" className="h-5 border-white/20 bg-white/15 px-1.5 text-[10px] text-white">
+                  <Badge variant="secondary" className="h-5 border-primary-foreground/20 bg-primary-foreground/15 px-1.5 text-[10px] text-primary-foreground">
                     {badge}
                   </Badge>
                 )}
               </div>
-              {subtitle && <p className="truncate text-[11px] text-white/75">{subtitle}</p>}
+              {subtitle && <p className="truncate text-[11px] text-primary-foreground/75">{subtitle}</p>}
             </div>
           </div>
           <Button
             type="button"
             variant="ghost"
             size="icon"
-            className="h-8 w-8 shrink-0 text-white hover:bg-white/20 hover:text-white"
+            className="h-8 w-8 shrink-0 text-primary-foreground hover:bg-primary-foreground/20 hover:text-primary-foreground"
             onClick={() => setOpen(false)}
             aria-label="Close chat"
           >
@@ -80,7 +80,7 @@ export function ChatWidget({
         size="icon"
         className={cn(
           'pointer-events-auto fixed bottom-4 h-14 w-14 rounded-full shadow-lg transition-transform hover:scale-105 sm:bottom-6',
-          'bg-gradient-to-br from-violet-600 to-indigo-600 text-white hover:from-violet-500 hover:to-indigo-500',
+          'bg-primary text-primary-foreground hover:bg-primary/90',
           corner,
         )}
         onClick={() => setOpen((v) => !v)}
