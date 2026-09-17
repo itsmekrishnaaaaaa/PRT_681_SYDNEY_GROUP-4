@@ -1,4 +1,4 @@
-import { type FormEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   contributeToSavingsGoal,
   createSavingsGoal,
@@ -6,21 +6,15 @@ import {
   getSavingsGoalAnalytics,
   getSavingsGoals,
   savingsStatusLabel,
+  updateSavingsGoal,
 } from '@/features/savings/api';
+import { SavingsGoalModal } from '@/features/savings/components/SavingsGoalModal';
 import { getErrorMessage } from '@/shared/api/client';
 import { EmptyState } from '@/shared/components/EmptyState';
 import { FeatureTip } from '@/shared/components/FeatureTip';
 import { PageHeader } from '@/shared/components/PageHeader';
 import { StatBar } from '@/shared/components/StatBar';
 import { StatCard } from '@/shared/components/StatCard';
-import {
-  FormErrorSummary,
-  FormField,
-  fieldInvalidClass,
-  pickErrors,
-  useFormValidation,
-  validators,
-} from '@/shared/form-field';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
@@ -28,16 +22,7 @@ import { Input } from '@/shared/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import type { SavingsGoal, SavingsGoalAnalytics } from '@/shared/types';
 import { money } from '@/shared/utils/dates';
-import { BarChart3, Calendar, Clock, PiggyBank, Target, Trash2, TrendingUp } from 'lucide-react';
-const defaultForm = {
-  title: '',
-  targetAmount: '',
-  currentAmount: '0',
-  allocationPercentage: '10',
-  targetDate: '',
-};
-
-type GoalFields = 'title' | 'targetAmount' | 'currentAmount' | 'allocationPercentage' | '_form';
+import { BarChart3, Calendar, Clock, Pencil, PiggyBank, Plus, Target, Trash2, TrendingUp } from 'lucide-react';
 
 const statusVariant = (status: string) => {
   if (status === 'Completed') return 'default';
@@ -48,9 +33,11 @@ const statusVariant = (status: string) => {
 export function SavingsGoalsPage() {
   const [goals, setGoals] = useState<SavingsGoal[]>([]);
   const [analytics, setAnalytics] = useState<SavingsGoalAnalytics | null>(null);
-  const [form, setForm] = useState(defaultForm);
   const [contributeAmounts, setContributeAmounts] = useState<Record<string, string>>({});
-  const { errors, clearError, validate, setFormError } = useFormValidation<GoalFields>();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editing, setEditing] = useState<SavingsGoal | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
 
   const load = async () => {
     const [goalList, analyticsData] = await Promise.all([
@@ -67,33 +54,12 @@ export function SavingsGoalsPage() {
   const totalTarget = goals.reduce((sum, g) => sum + g.targetAmount, 0);
   const totalSaved = goals.reduce((sum, g) => sum + g.currentAmount, 0);
   const allocationOk = totalAllocation <= 100;
+  const analyticsByGoal = new Map(analytics?.goals.map((g) => [g.goalId, g]) ?? []);
 
-  const handleSubmit = async (event: FormEvent) => {
-    event.preventDefault();
-    if (
-      !validate(() =>
-        pickErrors([
-          ['title', validators.required(form.title, 'Goal title is required.')],
-          ['targetAmount', validators.minNumber(form.targetAmount, 0.01, 'Enter a valid target amount.')],
-          ['currentAmount', form.currentAmount ? validators.minNumber(form.currentAmount, 0, 'Starting amount cannot be negative.') : undefined],
-          ['allocationPercentage', validators.minNumber(form.allocationPercentage, 0, 'Allocation must be at least 0%.') ?? validators.maxNumber(form.allocationPercentage, 100, 'Allocation cannot exceed 100%.')],
-        ]),
-      )
-    ) {
-      return;
-    }
-
-    try {
-      await createSavingsGoal({
-        title: form.title,
-        targetAmount: Number(form.targetAmount),
-        currentAmount: Number(form.currentAmount),
-        allocationPercentage: Number(form.allocationPercentage),
-        targetDate: form.targetDate || null,
-      });
-      setForm(defaultForm);
-      await load();
-    } catch (err) { setFormError(getErrorMessage(err)); }
+  const openCreate = () => {
+    setEditing(null);
+    setError('');
+    setModalOpen(true);
   };
 
   const handleContribute = async (goalId: string) => {
@@ -103,10 +69,10 @@ export function SavingsGoalsPage() {
       await contributeToSavingsGoal(goalId, amount);
       setContributeAmounts((a) => ({ ...a, [goalId]: '' }));
       await load();
-    } catch (err) { setFormError(getErrorMessage(err)); }
+    } catch (err) {
+      setError(getErrorMessage(err));
+    }
   };
-
-  const analyticsByGoal = new Map(analytics?.goals.map((g) => [g.goalId, g]) ?? []);
 
   return (
     <div className="space-y-6">
@@ -115,11 +81,20 @@ export function SavingsGoalsPage() {
         title="Savings goals"
         description="Set targets, allocate % of income, track progress, and see how many hours you need to reach each goal."
         badge={<Badge variant="secondary" className="font-normal">Step 4 of 4</Badge>}
+        action={
+          <Button className="w-full gap-2 sm:w-auto" onClick={openCreate}>
+            <Plus className="h-4 w-4" /> Add goal
+          </Button>
+        }
       />
 
       <FeatureTip variant="accent" title="Aura can help">
         Ask Aura (bottom-right chat) how many hours you need, whether you&apos;re on track, or if visa limits affect your plan.
       </FeatureTip>
+
+      {error && !modalOpen && (
+        <p className="rounded-lg border px-3 py-2 text-sm text-destructive">{error}</p>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard icon={Target} label="Active goals" value={goals.length} hint="In progress or pending" tone="violet" />
@@ -140,86 +115,16 @@ export function SavingsGoalsPage() {
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
         <TabsContent value="goals">
-          <div className="grid gap-6 lg:grid-cols-5">
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2"><PiggyBank className="h-4 w-4" /> New goal</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <FormErrorSummary errors={errors} />
-                <form className="space-y-4" noValidate onSubmit={handleSubmit}>
-                  <FormField label="Title" error={errors.title} required>
-                    <Input
-                      placeholder="Emergency fund"
-                      className={fieldInvalidClass(errors.title)}
-                      value={form.title}
-                      onChange={(e) => {
-                        setForm({ ...form, title: e.target.value });
-                        clearError('title');
-                      }}
-                    />
-                  </FormField>
-                  <FormField label="Target amount" error={errors.targetAmount} required>
-                    <Input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      className={fieldInvalidClass(errors.targetAmount)}
-                      value={form.targetAmount}
-                      onChange={(e) => {
-                        setForm({ ...form, targetAmount: e.target.value });
-                        clearError('targetAmount');
-                      }}
-                    />
-                  </FormField>
-                  <FormField label="Starting amount (optional)" error={errors.currentAmount}>
-                    <Input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      className={fieldInvalidClass(errors.currentAmount)}
-                      value={form.currentAmount}
-                      onChange={(e) => {
-                        setForm({ ...form, currentAmount: e.target.value });
-                        clearError('currentAmount');
-                      }}
-                    />
-                  </FormField>
-                  <FormField label="Allocation % of income" error={errors.allocationPercentage} required>
-                    <Input
-                      type="number"
-                      min="0"
-                      max="100"
-                      step="0.1"
-                      className={fieldInvalidClass(errors.allocationPercentage)}
-                      value={form.allocationPercentage}
-                      onChange={(e) => {
-                        setForm({ ...form, allocationPercentage: e.target.value });
-                        clearError('allocationPercentage');
-                      }}
-                    />
-                  </FormField>
-                  <FormField label="Target date (optional)">
-                    <Input
-                      type="date"
-                      value={form.targetDate}
-                      onChange={(e) => setForm({ ...form, targetDate: e.target.value })}
-                    />
-                  </FormField>
-                  <Button type="submit">Create goal</Button>
-                </form>
-              </CardContent>
-            </Card>
-
-            <div className="lg:col-span-3 grid gap-4 sm:grid-cols-2">
-              {goals.length === 0 ? (
-                <EmptyState
-                  icon={PiggyBank}
-                  title="No savings goals yet"
-                  description="Create your first goal — set a target amount, optional deadline, and % of income to auto-save."
-                  className="sm:col-span-2"
-                />
-              ) : goals.map((goal) => {
+          {goals.length === 0 ? (
+            <EmptyState
+              icon={PiggyBank}
+              title="No savings goals yet"
+              description="Create your first goal — set a target amount, optional deadline, and % of income to auto-save."
+              action={<Button className="gap-2" onClick={openCreate}><Plus className="h-4 w-4" /> Add goal</Button>}
+            />
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {goals.map((goal) => {
                 const ga = analyticsByGoal.get(goal.id);
                 return (
                   <Card key={goal.id} className="relative overflow-hidden">
@@ -232,9 +137,14 @@ export function SavingsGoalsPage() {
                           </CardTitle>
                           <CardDescription>{money(goal.currentAmount)} / {money(goal.targetAmount)}</CardDescription>
                         </div>
-                        <Button variant="ghost" size="icon" onClick={() => void deleteSavingsGoal(goal.id).then(load)}>
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <div className="flex shrink-0">
+                          <Button variant="ghost" size="icon" title="Edit goal" onClick={() => { setEditing(goal); setError(''); setModalOpen(true); }}>
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" title="Delete goal" onClick={() => void deleteSavingsGoal(goal.id).then(load)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-3">
@@ -268,7 +178,7 @@ export function SavingsGoalsPage() {
                 );
               })}
             </div>
-          </div>
+          )}
         </TabsContent>
 
         <TabsContent value="analytics">
@@ -327,6 +237,30 @@ export function SavingsGoalsPage() {
             </div>
           )}
         </TabsContent>
-      </Tabs>    </div>
+      </Tabs>
+
+      <SavingsGoalModal
+        open={modalOpen}
+        goal={editing}
+        saving={saving}
+        error={error}
+        onClose={() => { if (!saving) { setModalOpen(false); setEditing(null); setError(''); } }}
+        onSubmit={async (values) => {
+          setSaving(true);
+          setError('');
+          try {
+            if (editing) await updateSavingsGoal(editing.id, values);
+            else await createSavingsGoal(values);
+            await load();
+            setModalOpen(false);
+            setEditing(null);
+          } catch (err) {
+            setError(getErrorMessage(err));
+          } finally {
+            setSaving(false);
+          }
+        }}
+      />
+    </div>
   );
 }

@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import type { ActiveShiftSession, Job, Shift, ShiftSummary, UserAnalytics } from '@/shared/types';
 import { money, startOfMonth } from '@/shared/utils/dates';
 import { toShiftPayload } from '@/features/shifts/utils/shiftForm';
-import { CalendarDays, Clock, Coffee, DollarSign, LogIn, LogOut as LogOutIcon, Play, Timer, Briefcase } from 'lucide-react';
+import { CalendarDays, Clock, Coffee, DollarSign, LogIn, LogOut as LogOutIcon, Play, Plus, Timer, Briefcase } from 'lucide-react';
 
 export function ShiftsPage() {
   const [viewDate, setViewDate] = useState(() => startOfMonth(new Date()));
@@ -63,6 +63,19 @@ export function ShiftsPage() {
         title="Shift calendar"
         description="Log hours on the calendar, clock in live, or edit past shifts — pay is calculated from your job rate."
         badge={<Badge variant="secondary" className="font-normal">Step 2 of 4</Badge>}
+        action={
+          <Button
+            className="w-full gap-2 sm:w-auto"
+            onClick={() => {
+              setSelectedDate(new Date());
+              setEditingShift(null);
+              setError('');
+              setModalOpen(true);
+            }}
+          >
+            <Plus className="h-4 w-4" /> Add shift
+          </Button>
+        }
       />
 
       <FeatureTip title="Student visa?" variant="accent">
