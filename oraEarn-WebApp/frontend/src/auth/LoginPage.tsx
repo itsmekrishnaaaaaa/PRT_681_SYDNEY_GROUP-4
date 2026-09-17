@@ -14,7 +14,7 @@ import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Input } from '@/shared/ui/input';
 import { cn } from '@/shared/lib/utils';
-import { Briefcase, CalendarDays, Lock, LogIn, Mail, PiggyBank, Receipt, Sparkles } from 'lucide-react';
+import { Briefcase, CalendarDays, Eye, EyeOff, Lock, LogIn, Mail, PiggyBank, Receipt, Sparkles } from 'lucide-react';
 
 type LoginFields = 'email' | 'password' | '_form';
 
@@ -29,6 +29,7 @@ export function LoginPage() {
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const { errors, clearError, validate, setFormError } = useFormValidation<LoginFields>();
   const [submitting, setSubmitting] = useState(false);
 
@@ -119,11 +120,11 @@ export function LoginPage() {
               </FormField>
               <FormField label="Password" htmlFor="password" error={errors.password} required>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     id="password"
-                    type="password"
-                    className={cn('pl-9', fieldInvalidClass(errors.password))}
+                    type={showPassword ? 'text' : 'password'}
+                    className={cn('pl-9 pr-10', fieldInvalidClass(errors.password))}
                     value={password}
                     onChange={(e) => {
                       setPassword(e.target.value);
@@ -131,6 +132,15 @@ export function LoginPage() {
                     }}
                     autoComplete="current-password"
                   />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground"
+                    onClick={() => setShowPassword((v) => !v)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    aria-pressed={showPassword}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
                 </div>
               </FormField>
               <Button className="w-full gap-2" type="submit" disabled={submitting}>
