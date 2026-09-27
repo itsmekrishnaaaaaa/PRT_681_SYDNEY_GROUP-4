@@ -1,0 +1,7 @@
+Week 3 — Dharma Bahadur Budhathoki (S395172)
+Problem statement, canvas and solution pictures. This is what we showed in class before any code.
+
+Proof in this folder
+- oraEarn/oraEarnProblemStaement.png
+- oraEarn/Oraearn_project_canvas.png
+- oraEarn/oraEarn_solution.png

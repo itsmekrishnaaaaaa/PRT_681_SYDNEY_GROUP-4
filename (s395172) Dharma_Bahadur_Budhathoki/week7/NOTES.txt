@@ -1,0 +1,14 @@
+Week 7 — Dharma Bahadur Budhathoki (S395172)
+6 hours. Login / register JWT, admin approval, expense CRUD, Swagger while building.
+
+Proof in this folder
+- Individual Meeting Log - Week 07
+- figure-backend-auth.png
+- figure-frontend-login-code.png
+- figure-03-login-password-eye.png
+- figure-login-desktop.png
+- figure-expenses-desktop.png
+- figure-expenses-add-desktop.png
+
+What I see
+- Login page with password eye. Expense list and add pop-out.

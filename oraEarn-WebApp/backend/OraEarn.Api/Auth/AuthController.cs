@@ -15,12 +15,11 @@ public class AuthController(
 {
     [HttpPost("register")]
     [AllowAnonymous]
+    [Consumes("multipart/form-data")]
     [RequestSizeLimit(6_000_000)]
-    public async Task<ActionResult<RegisterResponse>> Register(
-        [FromForm] RegisterRequest request,
-        [FromForm] IFormFile visaDocument)
+    public async Task<ActionResult<RegisterResponse>> Register([FromForm] RegisterForm form)
     {
-        var (success, response, error) = await authService.RegisterAsync(request, visaDocument);
+        var (success, response, error) = await authService.RegisterAsync(form.ToRequest(), form.VisaDocument);
         if (!success)
         {
             return BadRequest(new { message = error });

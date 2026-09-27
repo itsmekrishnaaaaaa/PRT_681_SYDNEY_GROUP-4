@@ -1,0 +1,13 @@
+Week 5 — Dharma Bahadur Budhathoki (S395172)
+6 hours. Scrum Master work: Git branch app-s395172, ERD talk with Krishna, first backend/frontend setup.
+
+Proof in this folder
+- screenshorts/FinalErdAfterNormalization.png
+- screenshorts/ResearchOnmodularMonolithicArchitecture.png
+- screenshorts/setupofbackend.png
+- figure-diagram-team-erd.png
+- figure-krishna-erd.png
+- figure-diagram-architecture.png
+
+Note
+- I did not draw Krishna’s ERD. I sat in the talk and then built the models to the same names.

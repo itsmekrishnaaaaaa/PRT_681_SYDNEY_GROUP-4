@@ -1,0 +1,11 @@
+Week 6 — Dharma Bahadur Budhathoki (S395172)
+6 hours. Postgres + EF, packages, models from the ERD, Aura backend start. Individual meeting used as a sprint review.
+
+Proof in this folder
+- Individual Meeting Log - Week 06
+- figure-backend-db.png
+- figure-backend-program.png
+- figure-packages.png
+
+What I see
+- API starting on :5203, database context, no Docker.

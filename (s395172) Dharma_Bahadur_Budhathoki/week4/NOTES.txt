@@ -1,0 +1,11 @@
+Week 4 — Dharma Bahadur Budhathoki (S395172)
+5.5 hours on the timesheet. I picked OraEarn, listed jobs/shifts/expenses/savings, and started looking at ASP.NET packages.
+
+Proof in this folder
+- screenshots/how_to-use-.ASP.NET.nuget.png  (what I saw while adding NuGet packages)
+- screenshots/rest-api.png
+- figure-packages.png
+- figure-folder-structure.png
+
+Note
+- Week 4 hours are 5.5. Cap is 1–6.
