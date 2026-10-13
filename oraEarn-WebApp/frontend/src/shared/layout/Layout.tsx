@@ -10,7 +10,7 @@ import { Separator } from '@/shared/ui/separator';
 import { cn } from '@/shared/lib/utils';
 
 const navItems = [
-  { to: '/', label: 'Analytics', short: 'Home', icon: LayoutDashboard, end: true },
+  { to: '/dashboard', label: 'Analytics', short: 'Home', icon: LayoutDashboard, end: true },
   { to: '/jobs', label: 'Jobs', short: 'Jobs', icon: Briefcase },
   { to: '/shifts', label: 'Shifts', short: 'Shifts', icon: CalendarDays },
   { to: '/savings', label: 'Savings Goals', short: 'Savings', icon: PiggyBank },
@@ -42,7 +42,7 @@ export function Layout() {
 
   const handleLogout = async () => {
     await logout();
-    navigate('/login', { replace: true });
+    navigate('/', { replace: true });
   };
 
   const currentHint = pageHints[location.pathname];

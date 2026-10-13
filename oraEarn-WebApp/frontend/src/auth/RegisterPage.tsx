@@ -183,6 +183,9 @@ export function RegisterPage() {
     <div className="grid min-h-dvh place-items-center bg-background p-3 sm:p-4">
       <Card className="w-full max-w-2xl border-t-4 border-t-foreground">
         <CardHeader className="space-y-3">
+          <Link to="/" className="text-sm text-muted-foreground no-underline hover:text-foreground">
+            ← Back to home
+          </Link>
           <div className="flex items-center gap-3">
             <span className="text-3xl leading-none" aria-hidden>🇦🇺</span>
             <div>

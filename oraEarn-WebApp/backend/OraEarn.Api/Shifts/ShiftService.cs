@@ -1,11 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using OraEarn.Api.Data;
 using OraEarn.Api.Jobs;
+using OraEarn.Api.SavingsGoals;
 using OraEarn.Api.VisaCompliance;
 
 namespace OraEarn.Api.Shifts;
 
-public class ShiftService(ApplicationDbContext db, JobService jobService, VisaComplianceService visaComplianceService)
+public class ShiftService(
+    ApplicationDbContext db,
+    JobService jobService,
+    VisaComplianceService visaComplianceService,
+    SavingsGoalSyncService savingsGoalSync)
 {
     public async Task<IReadOnlyList<ShiftResponse>> GetAllAsync(string userId, DateOnly? from, DateOnly? to)
     {
@@ -85,6 +90,7 @@ public class ShiftService(ApplicationDbContext db, JobService jobService, VisaCo
 
         db.Shifts.Add(shift);
         await db.SaveChangesAsync();
+        await savingsGoalSync.ApplyAsync(userId);
 
         shift.Job = job;
         return Map(shift);
@@ -123,6 +129,7 @@ public class ShiftService(ApplicationDbContext db, JobService jobService, VisaCo
         shift.Job = job;
 
         await db.SaveChangesAsync();
+        await savingsGoalSync.ApplyAsync(userId);
         return Map(shift);
     }
 
@@ -137,6 +144,7 @@ public class ShiftService(ApplicationDbContext db, JobService jobService, VisaCo
 
         db.Shifts.Remove(shift);
         await db.SaveChangesAsync();
+        await savingsGoalSync.ApplyAsync(userId);
         return true;
     }
 

@@ -1,9 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using OraEarn.Api.Data;
+using OraEarn.Api.SavingsGoals;
 
 namespace OraEarn.Api.Expenses;
 
-public class ExpenseService(ApplicationDbContext db, ExpenseCategoryService categoryService)
+public class ExpenseService(ApplicationDbContext db, ExpenseCategoryService categoryService, SavingsGoalSyncService savingsGoalSync)
 {
     public async Task<IReadOnlyList<ExpenseResponse>> GetAllAsync(string userId, DateOnly? from, DateOnly? to)
     {
@@ -98,6 +99,7 @@ public class ExpenseService(ApplicationDbContext db, ExpenseCategoryService cate
 
         db.Expenses.Add(expense);
         await db.SaveChangesAsync();
+        await savingsGoalSync.ApplyAsync(userId);
         expense.Category = category;
         expense.PaymentMethod = paymentMethod;
         return Map(expense);
@@ -127,6 +129,7 @@ public class ExpenseService(ApplicationDbContext db, ExpenseCategoryService cate
         expense.PaymentMethod = paymentMethod;
 
         await db.SaveChangesAsync();
+        await savingsGoalSync.ApplyAsync(userId);
         return Map(expense);
     }
 
@@ -142,6 +145,7 @@ public class ExpenseService(ApplicationDbContext db, ExpenseCategoryService cate
 
         db.Expenses.Remove(expense);
         await db.SaveChangesAsync();
+        await savingsGoalSync.ApplyAsync(userId);
         return true;
     }
 

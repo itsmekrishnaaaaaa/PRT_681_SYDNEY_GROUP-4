@@ -9,10 +9,13 @@ namespace OraEarn.Api.SavingsGoals;
 public class SavingsGoalAnalyticsService(
     ApplicationDbContext db,
     AnalyticsService analyticsService,
-    VisaComplianceService visaComplianceService)
+    VisaComplianceService visaComplianceService,
+    SavingsGoalSyncService sync)
 {
     public async Task<SavingsGoalAnalyticsResponse> GetAnalyticsAsync(string userId)
     {
+        await sync.ApplyAsync(userId);
+
         var goals = await db.SavingsGoals.AsNoTracking()
             .Where(g => g.UserId == userId)
             .OrderByDescending(g => g.CreatedAt)

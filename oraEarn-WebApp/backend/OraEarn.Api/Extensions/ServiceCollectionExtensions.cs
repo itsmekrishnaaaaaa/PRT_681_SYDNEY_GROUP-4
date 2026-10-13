@@ -107,6 +107,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ShiftNotificationService>();
         services.AddScoped<ExpenseCategoryService>();
         services.AddScoped<SavingsGoalService>();
+        services.AddScoped<SavingsGoalSyncService>();
         services.AddScoped<SavingsGoalAnalyticsService>();
         services.AddScoped<SavingsAdvisorService>();
         services.AddHttpClient<PythonAdvisorClient>();

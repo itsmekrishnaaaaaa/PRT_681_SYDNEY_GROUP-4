@@ -10,10 +10,13 @@ namespace OraEarn.Api.Analytics;
 public class AnalyticsService(
     ApplicationDbContext db,
     VisaComplianceService visaComplianceService,
-    NotificationService notificationService)
+    NotificationService notificationService,
+    SavingsGoalSyncService savingsGoalSync)
 {
     public async Task<UserAnalyticsResponse> GetUserAnalyticsAsync(string userId, AnalyticsPeriod period = AnalyticsPeriod.SevenDays)
     {
+        await savingsGoalSync.ApplyAsync(userId);
+
         var (from, to, periodLabel) = UserAnalyticsBuilder.GetPeriodRange(period);
 
         var jobs = await db.Jobs.CountAsync(j => j.UserId == userId);

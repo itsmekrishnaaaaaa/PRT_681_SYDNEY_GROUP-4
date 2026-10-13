@@ -100,7 +100,9 @@ export function SavingsGoalModal({ open, goal, saving, error, onClose, onSubmit 
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{goal ? 'Edit savings goal' : 'New savings goal'}</DialogTitle>
-          <DialogDescription>Set a target, optional deadline, and % of income to put aside.</DialogDescription>
+          <DialogDescription>
+            Set a target and the % of leftover pay (shifts minus expenses) to put aside. The saved amount updates when you log shifts or expenses.
+          </DialogDescription>
         </DialogHeader>
         <FormErrorSummary errors={errors} />
         <form className="space-y-4" noValidate onSubmit={(e) => void handleSubmit(e)}>
@@ -130,7 +132,8 @@ export function SavingsGoalModal({ open, goal, saving, error, onClose, onSubmit 
               }}
             />
           </FormField>
-          <FormField label="Starting amount (optional)" error={errors.currentAmount}>
+          {!goal && (
+          <FormField label="Already saved (optional)" error={errors.currentAmount}>
             <Input
               type="number"
               min="0"
@@ -144,7 +147,8 @@ export function SavingsGoalModal({ open, goal, saving, error, onClose, onSubmit 
               }}
             />
           </FormField>
-          <FormField label="Allocation % of income" error={errors.allocationPercentage} required>
+          )}
+          <FormField label="Allocation % of leftover pay" error={errors.allocationPercentage} required>
             <Input
               type="number"
               min="0"

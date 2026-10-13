@@ -250,7 +250,7 @@ Each phase delivers working, testable functionality before proceeding to the nex
 | 3 | **Web application** | Deployable React frontend with all user-facing features |
 | 4 | **REST API** | Documented endpoints with JWT authentication |
 | 5 | **AI microservice** | Python FastAPI advisor with README |
-| 6 | **Documentation** | README, COPYING guide, requirements, project proposal |
+| 6 | **Documentation** | README, requirements, project proposal |
 | 7 | **Demo accounts** | Seeded admin and user profiles for demonstration |
 | 8 | **Export capability** | Analytics download in Excel and PDF formats |
 

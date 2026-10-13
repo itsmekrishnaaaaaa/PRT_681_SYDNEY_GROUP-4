@@ -59,21 +59,23 @@ export function LoginPage() {
   return (
     <div className="flex min-h-dvh flex-col lg:grid lg:grid-cols-2">
       <div className="flex w-full items-center gap-3 bg-primary px-4 py-3 text-primary-foreground lg:hidden">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-foreground/15 font-bold">OE</div>
-        <div className="min-w-0">
-          <p className="font-semibold leading-tight">OraEarn</p>
-          <p className="truncate text-xs text-primary-foreground/80">Earn smarter in Australia</p>
-        </div>
+        <Link to="/" className="flex items-center gap-3 text-primary-foreground no-underline">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-foreground/15 font-bold">OE</div>
+          <div className="min-w-0">
+            <p className="font-semibold leading-tight">OraEarn</p>
+            <p className="truncate text-xs text-primary-foreground/80">Earn smarter in Australia</p>
+          </div>
+        </Link>
       </div>
       <div className="hidden flex-col justify-between bg-primary p-10 text-primary-foreground lg:flex">
         <div>
-          <div className="flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-3 text-primary-foreground no-underline">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-foreground/15 font-bold text-lg">OE</div>
             <div>
               <p className="font-bold text-xl">OraEarn</p>
               <p className="flex items-center gap-1 text-sm text-primary-foreground/80"><Sparkles className="h-3.5 w-3.5" /> Earn smarter in Australia</p>
             </div>
-          </div>
+          </Link>
           <h2 className="mt-12 text-3xl font-bold leading-tight">Your shift money,<br />under control.</h2>
           <p className="mt-4 max-w-md text-primary-foreground/80 leading-relaxed">
             Built for students and workers — track hours, stay visa-safe, manage expenses, and hit savings goals with Aura AI by your side.
@@ -152,6 +154,10 @@ export function LoginPage() {
               New here?{' '}
               <Link className="font-medium text-foreground underline underline-offset-2" to="/register">
                 Create an account
+              </Link>
+              {' · '}
+              <Link className="font-medium text-foreground underline underline-offset-2" to="/">
+                Home
               </Link>
             </p>
             {import.meta.env.DEV && (

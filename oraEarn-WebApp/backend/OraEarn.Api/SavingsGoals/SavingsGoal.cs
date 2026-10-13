@@ -9,6 +9,7 @@ public class SavingsGoal
     public string Title { get; set; } = string.Empty;
     public decimal TargetAmount { get; set; }
     public decimal CurrentAmount { get; set; }
+    public decimal ManualAmount { get; set; }
     public decimal AllocationPercentage { get; set; }
     public DateOnly? TargetDate { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

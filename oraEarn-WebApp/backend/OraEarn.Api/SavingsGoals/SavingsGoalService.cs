@@ -1,18 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using OraEarn.Api.Data;
-using OraEarn.Api.AiAdvisor;
-using OraEarn.Api.Users;
-using OraEarn.Api.Jobs;
-using OraEarn.Api.Shifts;
-using OraEarn.Api.Expenses;
-using OraEarn.Api.Notifications;
 
 namespace OraEarn.Api.SavingsGoals;
 
-public class SavingsGoalService(ApplicationDbContext db)
+public class SavingsGoalService(ApplicationDbContext db, SavingsGoalSyncService sync)
 {
     public async Task<IReadOnlyList<SavingsGoalResponse>> GetAllAsync(string userId)
     {
+        await sync.ApplyAsync(userId);
+
         var goals = await db.SavingsGoals.AsNoTracking()
             .Where(g => g.UserId == userId)
             .OrderByDescending(g => g.CreatedAt)
@@ -23,6 +19,8 @@ public class SavingsGoalService(ApplicationDbContext db)
 
     public async Task<SavingsGoalResponse?> GetByIdAsync(string userId, Guid id)
     {
+        await sync.ApplyAsync(userId);
+
         var goal = await db.SavingsGoals.AsNoTracking()
             .SingleOrDefaultAsync(g => g.Id == id && g.UserId == userId);
 
@@ -38,14 +36,18 @@ public class SavingsGoalService(ApplicationDbContext db)
             UserId = userId,
             Title = request.Title,
             TargetAmount = request.TargetAmount,
-            CurrentAmount = request.CurrentAmount,
+            ManualAmount = Math.Max(0, request.CurrentAmount),
             AllocationPercentage = request.AllocationPercentage,
             TargetDate = request.TargetDate
         };
 
         db.SavingsGoals.Add(goal);
         await db.SaveChangesAsync();
-        return Map(goal);
+        await sync.ApplyAsync(userId);
+
+        var saved = await db.SavingsGoals.AsNoTracking()
+            .SingleAsync(g => g.Id == goal.Id);
+        return Map(saved);
     }
 
     public async Task<SavingsGoalResponse?> UpdateAsync(string userId, Guid id, SavingsGoalRequest request)
@@ -60,12 +62,15 @@ public class SavingsGoalService(ApplicationDbContext db)
 
         goal.Title = request.Title;
         goal.TargetAmount = request.TargetAmount;
-        goal.CurrentAmount = request.CurrentAmount;
         goal.AllocationPercentage = request.AllocationPercentage;
         goal.TargetDate = request.TargetDate;
 
         await db.SaveChangesAsync();
-        return Map(goal);
+        await sync.ApplyAsync(userId);
+
+        var saved = await db.SavingsGoals.AsNoTracking()
+            .SingleAsync(g => g.Id == id && g.UserId == userId);
+        return Map(saved);
     }
 
     public async Task<SavingsGoalResponse?> ContributeAsync(string userId, Guid id, SavingsGoalContributionRequest request)
@@ -81,9 +86,13 @@ public class SavingsGoalService(ApplicationDbContext db)
             return null;
         }
 
-        goal.CurrentAmount += request.Amount;
+        goal.ManualAmount += request.Amount;
         await db.SaveChangesAsync();
-        return Map(goal);
+        await sync.ApplyAsync(userId);
+
+        var saved = await db.SavingsGoals.AsNoTracking()
+            .SingleAsync(g => g.Id == id && g.UserId == userId);
+        return Map(saved);
     }
 
     public async Task<bool> DeleteAsync(string userId, Guid id)

@@ -32,7 +32,7 @@ export function QuickStartGuide() {
 }
 
 export const pageHints: Record<string, string> = {
-  '/': 'Overview of earnings, spending & visa limits',
+  '/dashboard': 'Overview of earnings, spending & visa limits',
   '/jobs': 'Employers & pay rates for shift earnings',
   '/shifts': 'Calendar, live clock-in & fortnight tracking',
   '/savings': 'Goals, progress & hours-to-complete',

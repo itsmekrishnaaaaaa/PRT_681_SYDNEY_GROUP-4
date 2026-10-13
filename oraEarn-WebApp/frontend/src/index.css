@@ -82,3 +82,40 @@
     }
   }
 }
+
+@keyframes oe-fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes oe-bar-fill {
+  from { width: 0; }
+  to { width: var(--oe-bar, 58%); }
+}
+@keyframes oe-menu {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes oe-pulse-soft {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.oe-fade-up { animation: oe-fade-up 0.55s ease-out forwards; }
+.oe-delay-1 { animation-delay: 0.07s; }
+.oe-delay-2 { animation-delay: 0.14s; }
+.oe-delay-3 { animation-delay: 0.21s; }
+.oe-delay-4 { animation-delay: 0.28s; }
+.oe-delay-5 { animation-delay: 0.35s; }
+.oe-bar { animation: oe-bar-fill 1s ease-out 0.2s forwards; }
+.oe-menu { animation: oe-menu 0.2s ease-out forwards; }
+.oe-icon-pulse { animation: oe-pulse-soft 2.4s ease-in-out infinite; }
+.oe-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.oe-card:hover { transform: translateY(-4px); box-shadow: 0 10px 24px rgb(0 0 0 / 0.08); }
+
+@media (prefers-reduced-motion: reduce) {
+  .oe-fade-up, .oe-bar, .oe-menu, .oe-icon-pulse, .oe-card {
+    animation: none !important;
+    transition: none !important;
+  }
+  .oe-card:hover { transform: none; }
+}

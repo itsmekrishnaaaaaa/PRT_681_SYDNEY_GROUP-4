@@ -10,6 +10,7 @@ import {
 import { AdminPage } from '@/features/admin/AdminPage';
 import { DashboardPage } from '@/features/dashboard/DashboardPage';
 import { ExpensesPage } from '@/features/expenses/ExpensesPage';
+import { HomePage } from '@/features/home/HomePage';
 import { JobsPage } from '@/features/jobs/JobsPage';
 import { SavingsGoalsPage } from '@/features/savings/SavingsGoalsPage';
 import { ShiftsPage } from '@/features/shifts/ShiftsPage';
@@ -20,6 +21,8 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          <Route path="/" element={<HomePage />} />
+
           <Route element={<GuestRoute />}>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
@@ -27,7 +30,7 @@ function App() {
 
           <Route element={<ProtectedRoute />}>
             <Route element={<Layout />}>
-              <Route path="/" element={<DashboardPage />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/jobs" element={<JobsPage />} />
               <Route path="/shifts" element={<ShiftsPage />} />
               <Route path="/savings" element={<SavingsGoalsPage />} />

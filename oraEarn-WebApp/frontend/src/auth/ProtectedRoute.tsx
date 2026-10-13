@@ -39,7 +39,7 @@ export function AdminRoute() {
   }
 
   if (!isAdmin) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <Outlet />;
@@ -57,7 +57,7 @@ export function GuestRoute() {
   }
 
   if (user) {
-    return <Navigate to={user.roles.includes('Admin') ? '/admin' : '/'} replace />;
+    return <Navigate to={user.roles.includes('Admin') ? '/admin' : '/dashboard'} replace />;
   }
 
   return <Outlet />;

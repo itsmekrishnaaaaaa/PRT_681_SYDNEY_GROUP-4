@@ -79,7 +79,7 @@ export function SavingsGoalsPage() {
       <PageHeader
         icon={PiggyBank}
         title="Savings goals"
-        description="Set targets, allocate % of income, track progress, and see how many hours you need to reach each goal."
+        description="Leftover money (shift pay minus expenses) is split into each goal by its allocation %. Log a shift or expense and the saved amount updates by itself."
         badge={<Badge variant="secondary" className="font-normal">Step 4 of 4</Badge>}
         action={
           <Button className="w-full gap-2 sm:w-auto" onClick={openCreate}>
@@ -87,6 +87,10 @@ export function SavingsGoalsPage() {
           </Button>
         }
       />
+
+      <FeatureTip title="Updates with your money">
+        Each goal takes its % of leftover pay (all shift earnings minus all expenses). Add extra with the box on the card if you already put cash aside.
+      </FeatureTip>
 
       <FeatureTip variant="accent" title="Aura can help">
         Ask Aura (bottom-right chat) how many hours you need, whether you&apos;re on track, or if visa limits affect your plan.
@@ -98,7 +102,7 @@ export function SavingsGoalsPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard icon={Target} label="Active goals" value={goals.length} hint="In progress or pending" tone="violet" />
-        <StatCard icon={PiggyBank} label="Saved so far" value={money(totalSaved)} hint="Total contributions" tone="emerald" />
+        <StatCard icon={PiggyBank} label="Saved so far" value={money(totalSaved)} hint="Leftover pay × allocation" tone="emerald" />
         <StatCard icon={TrendingUp} label="Combined target" value={money(totalTarget)} hint="All goal targets" tone="blue" />
         <StatCard
           icon={BarChart3}
@@ -119,7 +123,7 @@ export function SavingsGoalsPage() {
             <EmptyState
               icon={PiggyBank}
               title="No savings goals yet"
-              description="Create your first goal — set a target amount, optional deadline, and % of income to auto-save."
+              description="Create a goal and set the % of leftover pay to put aside. Logging a shift or expense updates the saved amount automatically."
               action={<Button className="gap-2" onClick={openCreate}><Plus className="h-4 w-4" /> Add goal</Button>}
             />
           ) : (

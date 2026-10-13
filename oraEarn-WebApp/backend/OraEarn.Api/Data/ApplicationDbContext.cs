@@ -96,6 +96,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.HasIndex(g => g.UserId);
             entity.Property(g => g.TargetAmount).HasPrecision(18, 2);
             entity.Property(g => g.CurrentAmount).HasPrecision(18, 2);
+            entity.Property(g => g.ManualAmount).HasPrecision(18, 2);
             entity.Property(g => g.AllocationPercentage).HasPrecision(5, 2);
             entity.HasOne(g => g.User)
                 .WithMany(u => u.SavingsGoals)

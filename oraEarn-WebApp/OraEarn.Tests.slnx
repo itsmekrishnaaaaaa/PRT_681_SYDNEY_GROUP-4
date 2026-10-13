@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="backend/OraEarn.Api.Tests/OraEarn.Api.Tests.csproj" />
+  <Project Path="backend/OraEarn.Api/OraEarn.Api.csproj" />
+</Solution>

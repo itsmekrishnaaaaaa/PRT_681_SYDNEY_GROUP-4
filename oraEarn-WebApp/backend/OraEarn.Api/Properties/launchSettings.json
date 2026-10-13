@@ -7,7 +7,9 @@
       "launchBrowser": false,
       "applicationUrl": "http://localhost:5203",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ROOT": "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\dotnet\\net10.0\\runtime",
+        "DOTNET_MULTILEVEL_LOOKUP": "0"
       }
     },
     "https": {
@@ -16,7 +18,9 @@
       "launchBrowser": false,
       "applicationUrl": "https://localhost:7102;http://localhost:5203",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ROOT": "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\dotnet\\net10.0\\runtime",
+        "DOTNET_MULTILEVEL_LOOKUP": "0"
       }
     }
   }

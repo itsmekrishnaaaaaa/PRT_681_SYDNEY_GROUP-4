@@ -1,4 +1,3 @@
 <Solution>
-  <Project Path="backend/OraEarn.Api/OraEarn.Api.csproj" />
-  <Project Path="backend/OraEarn.Api.Tests/OraEarn.Api.Tests.csproj" />
+  <Project DefaultStartup="true" Path="backend/OraEarn.Api/OraEarn.Api.csproj" />
 </Solution>
