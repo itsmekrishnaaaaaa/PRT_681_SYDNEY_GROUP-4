@@ -3,10 +3,20 @@ using OraEarn.Api.Users;
 
 namespace OraEarn.Api.AiAdvisor;
 
+// The admin "AI review" (FR-1.6) is a deterministic rule checklist that runs inside the API; it does
+// not call the Aura service, so it works the same whether Aura is running or not. It only advises:
+// approval is always an explicit admin action in RegistrationApprovalService.
 public class RegistrationApprovalAdvisorService
 {
+    /// <summary>
+    /// Scores a pending registration against completeness and visa-validity checks and returns a
+    /// recommendation with the passed checks and raised flags for the admin to review.
+    /// </summary>
     public RegistrationAiReviewResponse Review(PendingRegistrationResponse registration, bool documentExists)
     {
+        // Scoring: one point per complete profile field, two each for an unexpired visa and an
+        // uploaded document, because those are what the admin must actually verify. The weights and
+        // the approve threshold below are the team's heuristics, not a published standard.
         var checks = new List<string>();
         var flags = new List<string>();
         var score = 0;
@@ -43,6 +53,8 @@ public class RegistrationApprovalAdvisorService
 
         if (registration.DateOfBirth.HasValue)
         {
+            // Year difference only, so this can be one year high before the birthday; good enough
+            // for a plausibility check, which is why the message says "approx.".
             var age = DateOnly.FromDateTime(DateTime.UtcNow).Year - registration.DateOfBirth.Value.Year;
             if (age >= 16 && age <= 80)
             {
@@ -144,6 +156,10 @@ public class RegistrationApprovalAdvisorService
             flags.Add("No identity document on file.");
         }
 
+        // Suggest approval only with a document, no expired visa and at most one minor flag.
+        // Note: the "No visa document" test in the reject branch never matches, because the flag
+        // text above is "No identity document on file."; a missing document therefore leads to
+        // "Manual review recommended" rather than "Reject or request resubmission".
         var suggestApprove = score >= 7 && documentExists &&
             !flags.Any(f => f.Contains("expired", StringComparison.OrdinalIgnoreCase)) &&
             flags.Count <= 1;
