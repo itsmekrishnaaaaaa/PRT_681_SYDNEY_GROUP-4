@@ -7,9 +7,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // First-run convenience: give a new developer an editable appsettings.Local.json (gitignored) with
 // a default local connection string, so real passwords never have to go into a committed file.
+// Development only (OBS-03): Production, Staging and the Testing environment used by the test suite must
+// never create this file, because once present it overrides their environment variables (see below).
 var localSettings = Path.Combine(builder.Environment.ContentRootPath, "appsettings.Local.json");
 var localExample = Path.Combine(builder.Environment.ContentRootPath, "appsettings.Local.json.example");
-if (!File.Exists(localSettings) && File.Exists(localExample))
+if (builder.Environment.IsDevelopment() && !File.Exists(localSettings) && File.Exists(localExample))
 {
     try
     {
@@ -17,7 +19,7 @@ if (!File.Exists(localSettings) && File.Exists(localExample))
     }
     catch (IOException) when (File.Exists(localSettings))
     {
-        // Another host instance created it first (e.g. parallel test factories).
+        // Another host instance created it first (e.g. two dev servers started together).
     }
 }
 
