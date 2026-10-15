@@ -18,8 +18,14 @@ using OraEarn.Api.VisaCompliance;
 
 namespace OraEarn.Api.Extensions;
 
+// Composition root for the API. Configuration problems are turned into startup exceptions here on
+// purpose: a misconfigured server should refuse to start, not run and fail on the first request.
 public static class ServiceCollectionExtensions
 {
+    /// <summary>
+    /// Registers persistence, Identity, JWT authentication, CORS, SignalR and every module service.
+    /// Throws at startup if the connection string, JWT secret or CORS origins are unusable.
+    /// </summary>
     public static IServiceCollection AddApplicationServices(
         this IServiceCollection services,
         IConfiguration configuration,
@@ -30,6 +36,7 @@ public static class ServiceCollectionExtensions
 
         services.AddDbContext<ApplicationDbContext>(options =>
         {
+            // The test host swaps in an in-memory database so the suite runs without PostgreSQL.
             if (environment.IsEnvironment("Testing"))
             {
                 var dbName = configuration["Testing:InMemoryDatabase"] ?? "OraEarnTests";
@@ -47,6 +54,8 @@ public static class ServiceCollectionExtensions
             options.UseNpgsql(connectionString);
         });
 
+        // Password and lockout policy implement NFR-2.2: 8+ characters with upper, lower and digit.
+        // Symbols are not required. Five failures lock the account for 15 minutes to slow guessing.
         services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.Password.RequiredLength = 8;
@@ -79,11 +88,17 @@ public static class ServiceCollectionExtensions
                     ValidIssuer = jwt.Issuer,
                     ValidAudience = jwt.Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Secret)),
+
+                    // Default skew is 5 minutes; 1 minute keeps short-lived access tokens short
+                    // while tolerating small clock differences between servers.
                     ClockSkew = TimeSpan.FromMinutes(1)
                 };
 
                 options.Events = new JwtBearerEvents
                 {
+                    // Browsers cannot set an Authorization header on a WebSocket, so the SignalR
+                    // client sends the token as ?access_token=. It is accepted only on /hubs paths
+                    // so tokens in query strings (which end up in logs) stay limited to that case.
                     OnMessageReceived = context =>
                     {
                         var accessToken = context.Request.Query["access_token"];
@@ -119,18 +134,24 @@ public static class ServiceCollectionExtensions
         services.AddScoped<RegistrationApprovalService>();
         services.AddScoped<VisaDocumentStorageService>();
 
+        // Enums travel as strings ("Pending", "Fixed") so the React client and Swagger stay readable
+        // and do not break if enum members are reordered.
         services.AddControllers()
             .AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
             options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
         });
+        // Swagger is a development tool only; production does not expose the API description.
         if (environment.IsDevelopment())
         {
             services.AddSwaggerDocumentation();
         }
 
         services.AddSignalR();
+
+        // An explicit origin list is required because AllowCredentials (needed by SignalR) cannot be
+        // combined with "allow any origin".
         services.AddCors(options =>
         {
             options.AddPolicy("Frontend", policy =>
@@ -150,11 +171,15 @@ public static class ServiceCollectionExtensions
         var jwt = configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>()
             ?? throw new InvalidOperationException("JWT settings are missing.");
 
+        // Tokens are signed with HMAC-SHA256, which needs a key of at least 256 bits; a short or
+        // missing secret would make every token forgeable, so the API refuses to start instead.
         if (string.IsNullOrWhiteSpace(jwt.Secret) || jwt.Secret.Length < 32)
         {
             throw new InvalidOperationException("Jwt:Secret must be at least 32 characters. Set Jwt__Secret.");
         }
 
+        // The committed development secret is public in the repository. Refusing it outside
+        // Development/Testing stops a deployment from accidentally going live with a known key.
         if (!environment.IsDevelopment()
             && !environment.IsEnvironment("Testing")
             && jwt.Secret.Contains("DevOnly", StringComparison.OrdinalIgnoreCase))
@@ -171,6 +196,8 @@ public static class ServiceCollectionExtensions
             .Where(origin => !string.IsNullOrWhiteSpace(origin))
             .ToArray() ?? [];
 
+        // With no origins the browser would block every frontend call, which looks like a network
+        // fault rather than a config error; failing at startup makes the cause obvious.
         if (origins.Length == 0)
         {
             throw new InvalidOperationException("Cors:AllowedOrigins must contain at least one origin.");
