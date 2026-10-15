@@ -11,16 +11,23 @@ using OraEarn.Api.Expenses;
 
 namespace OraEarn.Api.Notifications;
 
+// Notifications are not stored. They are rebuilt from the user's shifts, goals and visa status on every
+// request, so they can never go stale; only "this key was read" is persisted (UserNotificationReads).
 public class NotificationService(
     ApplicationDbContext db,
     VisaComplianceService visaComplianceService)
 {
+    /// <summary>Returns the notification bell contents and the unread count for the user.</summary>
     public async Task<NotificationInboxResponse> GetInboxAsync(string userId)
     {
         var items = await BuildNotificationsAsync(userId);
         return new NotificationInboxResponse(items, items.Count(n => !n.IsRead));
     }
 
+    /// <summary>
+    /// Builds the current notification list and marks each one read if its key is in the user's read set.
+    /// Also used by the analytics dashboard.
+    /// </summary>
     public async Task<IReadOnlyList<AppNotification>> BuildNotificationsAsync(string userId)
     {
         var goals = await db.SavingsGoals.AsNoTracking()
@@ -38,6 +45,8 @@ public class NotificationService(
         var visaNotes = visaComplianceService.BuildNotifications(visa);
         var raw = BuildAllNotificationItems(visaNotes, goals, shifts, netBalance);
 
+        // Known gap: keys without a goal id (e.g. visa_limit_warning, negative_balance) are fixed strings, so once
+        // read they stay read even if the condition clears and later comes back.
         var readKeys = await db.UserNotificationReads.AsNoTracking()
             .Where(r => r.UserId == userId)
             .Select(r => r.NotificationKey)
@@ -46,8 +55,11 @@ public class NotificationService(
         return raw.Select(n => n with { IsRead = readKeys.Contains(n.Id) }).ToList();
     }
 
+    /// <summary>Records one notification key as read; does nothing if it is already recorded.</summary>
     public async Task MarkReadAsync(string userId, string notificationId)
     {
+        // Check-then-insert: two simultaneous requests for the same key can still hit the unique
+        // (UserId, NotificationKey) index and fail with a database error.
         var exists = await db.UserNotificationReads.AnyAsync(r =>
             r.UserId == userId && r.NotificationKey == notificationId);
         if (exists)
@@ -64,6 +76,8 @@ public class NotificationService(
         await db.SaveChangesAsync();
     }
 
+    /// <summary>Records every supplied key as read. Keys come from the client and are not checked against the
+    /// current list, but rows are only ever written for the calling user.</summary>
     public async Task MarkAllReadAsync(string userId, IReadOnlyList<string> notificationIds)
     {
         var existing = await db.UserNotificationReads.AsNoTracking()
@@ -84,6 +98,8 @@ public class NotificationService(
         await db.SaveChangesAsync();
     }
 
+    // These rules overlap with SavingsGoalAnalyticsService (estimates, 4.33 weeks per month, allocation over 100%),
+    // and the two copies have drifted slightly (e.g. the average-rate fallback). Change both if a rule changes.
     private static List<AppNotification> BuildAllNotificationItems(
         IReadOnlyList<SavingsNotification> visaNotes,
         List<SavingsGoal> goals,
@@ -94,6 +110,7 @@ public class NotificationService(
         var notifications = new List<AppNotification>();
         var seenIds = new HashSet<string>();
 
+        // De-duplicate by key so the same alert never appears twice.
         void Add(AppNotification n)
         {
             if (seenIds.Add(n.Id))
@@ -241,6 +258,8 @@ public class NotificationService(
             }
         }
 
+        // Errors first, then warnings. IsRead is still false for every item here (read state is applied by the
+        // caller), so the IsRead ordering has no effect.
         return notifications
             .OrderByDescending(n => n.Severity == "error")
             .ThenByDescending(n => n.Severity == "warning")
@@ -264,6 +283,7 @@ public class NotificationService(
         _ => "Notification"
     };
 
+    // Earnings from the last 30 days; falls back to all-time earnings when there are no recent shifts.
     private static decimal EstimateMonthlyIncome(List<Shift> shifts)
     {
         if (shifts.Count == 0) return 0;
@@ -273,6 +293,7 @@ public class NotificationService(
         return recent.Sum(s => s.TotalEarned);
     }
 
+    // Spread over at least one week so a single recent shift does not inflate the weekly average.
     private static decimal CalculateAvgHoursPerWeek(List<Shift> shifts)
     {
         if (shifts.Count == 0) return 0;
