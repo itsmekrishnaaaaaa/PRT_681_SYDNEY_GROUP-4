@@ -12,11 +12,17 @@ public class AnalyticsService(
     VisaComplianceService visaComplianceService,
     NotificationService notificationService)
 {
+    /// <summary>
+    /// Builds the personal dashboard for a period (default last 7 days): hours, earnings, spending,
+    /// net balance, category breakdown, chart timeline, visa status and notifications.
+    /// </summary>
     public async Task<UserAnalyticsResponse> GetUserAnalyticsAsync(string userId, AnalyticsPeriod period = AnalyticsPeriod.SevenDays)
     {
         var (from, to, periodLabel) = UserAnalyticsBuilder.GetPeriodRange(period);
 
         var jobs = await db.Jobs.CountAsync(j => j.UserId == userId);
+        // All rows are loaded once and filtered in memory because the 12-month chart and the period
+        // totals both need them. Fine at student-worker volumes; revisit if histories grow large.
         var allShifts = await db.Shifts.ForUser(userId).ToListAsync();
         var allExpenses = await db.Expenses.Include(e => e.Category).ForUser(userId).ToListAsync();
         var goals = await db.SavingsGoals.Where(g => g.UserId == userId).ToListAsync();
@@ -62,6 +68,9 @@ public class AnalyticsService(
             notifications.Count(n => !n.IsRead));
     }
 
+    /// <summary>
+    /// Platform-wide totals plus per-user statistics for the admin dashboard (FR-7.6, NFR-8.2).
+    /// </summary>
     public async Task<AdminAnalyticsResponse> GetPlatformAnalyticsAsync()
     {
         var users = await db.Users.OrderBy(u => u.Email).ToListAsync();
@@ -76,6 +85,8 @@ public class AnalyticsService(
         var totalGoals = 0;
         var adminCount = 0;
 
+        // Several queries per user (N+1). Acceptable for a small cohort and simple to read; a
+        // grouped query would be needed before this is used with many users.
         foreach (var user in users)
         {
             var roles = await db.UserRoles

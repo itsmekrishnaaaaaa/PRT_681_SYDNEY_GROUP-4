@@ -9,8 +9,14 @@ using OraEarn.Api.Expenses;
 
 namespace OraEarn.Api.Analytics;
 
+// Pure functions with no database access, so the period and chart rules can be unit tested directly
+// (see UserAnalyticsBuilderTests).
 public static class UserAnalyticsBuilder
 {
+    /// <summary>
+    /// Returns the inclusive date range for a period: today and the 6 or 29 days before it, or the
+    /// current month plus the 11 before it, so the yearly chart always shows 12 whole month buckets.
+    /// </summary>
     public static (DateOnly From, DateOnly To, string Label) GetPeriodRange(AnalyticsPeriod period)
     {
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
@@ -22,6 +28,7 @@ public static class UserAnalyticsBuilder
         };
     }
 
+    /// <summary>Maps the ?period= query value to a period; anything unrecognised means 7 days.</summary>
     public static AnalyticsPeriod ParsePeriod(string? value) =>
         value?.ToLowerInvariant() switch
         {
@@ -30,6 +37,7 @@ public static class UserAnalyticsBuilder
             _ => AnalyticsPeriod.SevenDays,
         };
 
+    /// <summary>Builds chart buckets: one per day for 7 and 30 days, one per month for 12 months, including empty buckets.</summary>
     public static IReadOnlyList<WeekdayAnalyticsItem> BuildTimelineBreakdown(
         AnalyticsPeriod period,
         List<Shift> shifts,
@@ -45,6 +53,10 @@ public static class UserAnalyticsBuilder
         };
     }
 
+    /// <summary>
+    /// Derives notifications from visa status, net balance and goal progress. Currently not called:
+    /// the bell and dashboard use NotificationService, which has its own, fuller version of these rules.
+    /// </summary>
     public static List<AppNotification> BuildNotificationItems(
         VisaComplianceResponse? visa,
         List<SavingsGoal> goals,
@@ -105,6 +117,7 @@ public static class UserAnalyticsBuilder
             if (goal.CurrentAmount <= 0)
             {
                 notifications.Add(new AppNotification(
+                    // Goal notifications embed the goal id in the key so read state is tracked per goal.
                     $"goal_not_started:{goal.Id}",
                     "goal_not_started",
                     "Savings goal not started",
@@ -145,6 +158,7 @@ public static class UserAnalyticsBuilder
         return notifications;
     }
 
+    /// <summary>The same notifications in the simpler type/message/severity shape. Currently not called.</summary>
     public static List<SavingsNotification> BuildNotifications(
         VisaComplianceResponse? visa,
         List<SavingsGoal> goals,
