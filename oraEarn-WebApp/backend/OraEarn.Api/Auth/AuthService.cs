@@ -5,12 +5,19 @@ using OraEarn.Api.VisaCompliance;
 
 namespace OraEarn.Api.Auth;
 
+// Registration and sign-in. Expected failures (validation, duplicate email, pending approval, bad
+// password) are returned as an error message rather than thrown, so the controller can map them to
+// 400/401 without exception handling.
 public class AuthService(
     UserManager<ApplicationUser> userManager,
     SignInManager<ApplicationUser> signInManager,
     TokenService tokenService,
     VisaDocumentStorageService documentStorage)
 {
+    /// <summary>
+    /// Creates a Pending user with the uploaded identity document. The user cannot sign in until an
+    /// admin approves the registration (NFR-7.3).
+    /// </summary>
     public async Task<(bool Success, RegisterResponse? Response, string? Error)> RegisterAsync(
         RegisterRequest request,
         IFormFile? visaDocument)
@@ -42,6 +49,8 @@ public class AuthService(
             VisaExpiryDate = request.VisaExpiryDate,
             IdentityDocumentType = request.IdentityDocumentType,
             ApprovalStatus = AccountApprovalStatus.Pending,
+
+            // There is no email verification step; admin approval is the gate instead.
             EmailConfirmed = true
         };
 
@@ -51,6 +60,8 @@ public class AuthService(
             return (false, null, string.Join(" ", result.Errors.Select(e => e.Description)));
         }
 
+        // The file name needs the new user's id, so the user is created first and deleted again if
+        // the document cannot be stored. This rollback is the only place a user is ever deleted.
         var (saved, path, saveError) = await documentStorage.SaveAsync(visaDocument!, user.Id);
         if (!saved)
         {
@@ -70,8 +81,14 @@ public class AuthService(
             AccountApprovalStatus.Pending), null);
     }
 
+    /// <summary>
+    /// Signs in an approved user (or any admin) and returns a new token pair. Failed passwords count
+    /// towards the Identity lockout.
+    /// </summary>
     public async Task<(bool Success, AuthResponse? Response, string? Error)> LoginAsync(LoginRequest request)
     {
+        // Unknown email and wrong password give the same message so the login form cannot be used
+        // to discover which emails are registered.
         var user = await userManager.FindByEmailAsync(request.Email);
         if (user is null)
         {
@@ -81,6 +98,10 @@ public class AuthService(
         var roles = await userManager.GetRolesAsync(user);
         var isAdmin = roles.Contains(Roles.Admin);
 
+        // Admins skip the approval gate (the seeder creates them already approved). Note the order:
+        // the approval check runs before the password check, so the pending/rejected message is
+        // shown even without the correct password and reveals that the email is registered. Whether
+        // that was intended is not recorded; moving the check after the password would close it.
         if (!isAdmin)
         {
             if (user.ApprovalStatus == AccountApprovalStatus.Pending)
@@ -106,6 +127,7 @@ public class AuthService(
         return (true, auth, null);
     }
 
+    /// <summary>Returns the signed-in user's profile and roles, or null if the user no longer exists.</summary>
     public async Task<UserProfileResponse?> GetProfileAsync(string userId)
     {
         var user = await userManager.FindByIdAsync(userId);
@@ -140,6 +162,8 @@ public class AuthService(
             return "Password and confirmation do not match.";
         }
 
+        // Early, friendlier length message; the full policy (upper, lower, digit) is enforced by
+        // Identity in CreateAsync.
         if (request.Password.Length < 8)
         {
             return "Password must be at least 8 characters.";
@@ -171,6 +195,7 @@ public class AuthService(
             return "Working rights is required.";
         }
 
+        // Keeps the two fields consistent so VisaComplianceService reliably applies the 48-hour rule.
         if (request.VisaStatus.Equals("Student", StringComparison.OrdinalIgnoreCase) &&
             !request.WorkingRights.Equals("Student", StringComparison.OrdinalIgnoreCase))
         {
@@ -196,6 +221,9 @@ public class AuthService(
         return null;
     }
 
+    // Accepts the common ways Australians write a number (0412 345 678, +61 412 345 678, 61412345678)
+    // by normalising to +61 and then requiring a landline (2, 3, 7, 8) or mobile (4) prefix and
+    // eight more digits.
     private static bool IsValidAustralianPhone(string phone)
     {
         var digits = new string(phone.Where(char.IsDigit).ToArray());

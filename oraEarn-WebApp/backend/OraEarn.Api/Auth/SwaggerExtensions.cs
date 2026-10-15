@@ -2,8 +2,12 @@ using Microsoft.OpenApi.Models;
 
 namespace OraEarn.Api.Auth;
 
+// Registered only in Development (see ServiceCollectionExtensions and Program).
 public static class SwaggerExtensions
 {
+    /// <summary>
+    /// Adds Swagger generation with a JWT bearer scheme, so the Authorize button can call protected endpoints.
+    /// </summary>
     public static IServiceCollection AddSwaggerDocumentation(this IServiceCollection services)
     {
         services.AddEndpointsApiExplorer();
@@ -45,6 +49,7 @@ public static class SwaggerExtensions
         return services;
     }
 
+    /// <summary>Serves the OpenAPI document and the Swagger UI at /swagger.</summary>
     public static WebApplication UseSwaggerDocumentation(this WebApplication app)
     {
         app.UseSwagger();
