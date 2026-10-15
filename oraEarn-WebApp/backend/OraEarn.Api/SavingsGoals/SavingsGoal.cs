@@ -15,6 +15,8 @@ public class SavingsGoal
 
     public ApplicationUser User { get; set; } = null!;
 
+    // Remaining, progress and status are computed, not stored columns, so they can never drift out
+    // of step with the saved amount. Saving more than the target caps progress at 100%.
     public decimal RemainingAmount => Math.Max(0, TargetAmount - CurrentAmount);
 
     public decimal ProgressPercent =>

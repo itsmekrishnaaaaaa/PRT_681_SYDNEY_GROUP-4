@@ -11,6 +11,7 @@ namespace OraEarn.Api.SavingsGoals;
 
 public class SavingsGoalService(ApplicationDbContext db)
 {
+    /// <summary>Lists the user's savings goals, newest first, with computed progress and status.</summary>
     public async Task<IReadOnlyList<SavingsGoalResponse>> GetAllAsync(string userId)
     {
         var goals = await db.SavingsGoals.AsNoTracking()
@@ -21,6 +22,7 @@ public class SavingsGoalService(ApplicationDbContext db)
         return goals.Select(Map).ToList();
     }
 
+    /// <summary>Returns one of the user's goals, or null if it does not exist or is not theirs.</summary>
     public async Task<SavingsGoalResponse?> GetByIdAsync(string userId, Guid id)
     {
         var goal = await db.SavingsGoals.AsNoTracking()
@@ -29,6 +31,7 @@ public class SavingsGoalService(ApplicationDbContext db)
         return goal is null ? null : Map(goal);
     }
 
+    /// <summary>Creates a goal. Throws <see cref="ArgumentException"/> if its allocation is outside 0-100%.</summary>
     public async Task<SavingsGoalResponse> CreateAsync(string userId, SavingsGoalRequest request)
     {
         ValidateAllocation(request.AllocationPercentage);
@@ -48,6 +51,7 @@ public class SavingsGoalService(ApplicationDbContext db)
         return Map(goal);
     }
 
+    /// <summary>Edits one of the user's goals, including its saved amount; null if not theirs.</summary>
     public async Task<SavingsGoalResponse?> UpdateAsync(string userId, Guid id, SavingsGoalRequest request)
     {
         ValidateAllocation(request.AllocationPercentage);
@@ -68,6 +72,7 @@ public class SavingsGoalService(ApplicationDbContext db)
         return Map(goal);
     }
 
+    /// <summary>Adds a positive amount to a goal's saved total; null if the goal is not the user's.</summary>
     public async Task<SavingsGoalResponse?> ContributeAsync(string userId, Guid id, SavingsGoalContributionRequest request)
     {
         if (request.Amount <= 0)
@@ -86,6 +91,7 @@ public class SavingsGoalService(ApplicationDbContext db)
         return Map(goal);
     }
 
+    /// <summary>Deletes one of the user's goals. Returns false if it is not found or not theirs.</summary>
     public async Task<bool> DeleteAsync(string userId, Guid id)
     {
         var goal = await db.SavingsGoals.SingleOrDefaultAsync(g => g.Id == id && g.UserId == userId);
@@ -99,6 +105,8 @@ public class SavingsGoalService(ApplicationDbContext db)
         return true;
     }
 
+    // Checks one goal only. The total across all goals may exceed 100%; that is reported as an
+    // "allocation_overflow" notification by SavingsGoalAnalyticsService instead of being blocked.
     private static void ValidateAllocation(decimal allocation)
     {
         if (allocation is < 0 or > 100)

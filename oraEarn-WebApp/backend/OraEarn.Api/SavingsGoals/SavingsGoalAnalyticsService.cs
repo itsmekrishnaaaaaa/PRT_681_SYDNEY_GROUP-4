@@ -6,11 +6,17 @@ using OraEarn.Api.VisaCompliance;
 
 namespace OraEarn.Api.SavingsGoals;
 
+// Turns goals into "how many hours of work until I reach this" (FR-6.4, FR-6.5). All figures are
+// estimates from the user's own shift history; nothing here is stored.
 public class SavingsGoalAnalyticsService(
     ApplicationDbContext db,
     AnalyticsService analyticsService,
     VisaComplianceService visaComplianceService)
 {
+    /// <summary>
+    /// Returns each goal with hours needed, average rate and an estimated finish date, plus savings and
+    /// visa alerts for the goals page. Also the context source for the Aura chat.
+    /// </summary>
     public async Task<SavingsGoalAnalyticsResponse> GetAnalyticsAsync(string userId)
     {
         var goals = await db.SavingsGoals.AsNoTracking()
@@ -27,6 +33,9 @@ public class SavingsGoalAnalyticsService(
 
         var monthlyIncome = EstimateMonthlyIncome(shifts);
 
+        // Prefer the rate actually earned (pay / hours, so breaks and rate changes are reflected); with
+        // no shifts yet, fall back to the average job rate. Note: AverageAsync on a user with no jobs
+        // either is likely to throw rather than return 0 - not covered by tests.
         var avgHourlyRate = shifts.Count > 0
             ? shifts.Sum(s => s.TotalEarned) / Math.Max(shifts.Sum(s => s.TotalHours), 1)
             : await db.Jobs.Where(j => j.UserId == userId).Select(j => j.HourlyRate).AverageAsync() is decimal rate ? rate : 0;
@@ -38,6 +47,9 @@ public class SavingsGoalAnalyticsService(
             var remaining = g.RemainingAmount;
             var hoursNeeded = avgHourlyRate > 0 ? Math.Round(remaining / avgHourlyRate, 1) : 0;
             var monthlySavings = monthlyIncome * (g.AllocationPercentage / 100m);
+            // Two estimates: by the user's usual weekly hours if they have shift history, otherwise by
+            // the allocated share of monthly income (4.33 = average weeks per month). Hours needed treats
+            // every dollar earned as saved, so it is an optimistic lower bound.
             var weeksToComplete = avgHoursPerWeek > 0 && hoursNeeded > 0
                 ? (int)Math.Ceiling(hoursNeeded / avgHoursPerWeek)
                 : monthlySavings > 0 && remaining > 0
@@ -66,6 +78,7 @@ public class SavingsGoalAnalyticsService(
                 weeksToComplete);
         }).ToList();
 
+        // Visa alerts go first because they are legal limits, ahead of budgeting advice.
         var visaStatus = await visaComplianceService.GetStatusAsync(userId);
         var notifications = BuildNotifications(goals, userAnalytics, monthlyIncome, items);
         notifications.InsertRange(0, visaComplianceService.BuildNotifications(visaStatus));
@@ -78,6 +91,8 @@ public class SavingsGoalAnalyticsService(
             notifications);
     }
 
+    // Earnings in the last 30 days. If there are none, all-time earnings are used instead, which
+    // overstates "monthly" income for users with a long history but keeps estimates non-zero.
     private static decimal EstimateMonthlyIncome(List<Shift> shifts)
     {
         if (shifts.Count == 0) return 0;
@@ -92,6 +107,7 @@ public class SavingsGoalAnalyticsService(
         return recent.Sum(s => s.TotalEarned);
     }
 
+    // The span is at least one week so a single recent shift does not look like a huge weekly rate.
     private static decimal CalculateAvgHoursPerWeek(List<Shift> shifts)
     {
         if (shifts.Count == 0) return 0;
