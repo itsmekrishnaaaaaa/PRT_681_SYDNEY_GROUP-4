@@ -6,8 +6,13 @@ using OraEarn.Api.Users;
 
 namespace OraEarn.Api.Data;
 
+// Runs on every startup, so every step checks before inserting and is safe to repeat.
 public static class DbSeeder
 {
+    /// <summary>
+    /// Ensures roles and payment methods exist, then either loads the demo data set (Seed:DemoData)
+    /// or creates a single admin from Seed:AdminEmail / Seed:AdminPassword if both are configured.
+    /// </summary>
     public static async Task SeedAsync(IServiceProvider services, IConfiguration configuration)
     {
         using var scope = services.CreateScope();
@@ -25,6 +30,7 @@ public static class DbSeeder
 
         await SeedPaymentMethodsAsync(scope.ServiceProvider.GetRequiredService<ApplicationDbContext>());
 
+        // The demo admin's password is public in the README, so DemoData must stay off anywhere real.
         if (seed.DemoData)
         {
             await EnsureAdminAsync(userManager, "admin@oraearn.local", "Admin123!", isDemo: true);
@@ -70,6 +76,8 @@ public static class DbSeeder
         };
 
         var result = await userManager.CreateAsync(admin, password);
+        // Fail startup loudly (e.g. a configured admin password that breaks the password policy)
+        // rather than run with no way to sign in as admin.
         if (!result.Succeeded)
         {
             var errors = string.Join("; ", result.Errors.Select(e => e.Description));
