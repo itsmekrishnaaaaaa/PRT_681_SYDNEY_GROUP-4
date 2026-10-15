@@ -3,8 +3,11 @@ using OraEarn.Api.Data;
 
 namespace OraEarn.Api.Expenses;
 
+// Expenses carry no UserId column (3NF): ownership is resolved through Expense.Category.UserId, so
+// every query joins the category or uses QueryExtensions.ForUser.
 public class ExpenseService(ApplicationDbContext db, ExpenseCategoryService categoryService)
 {
+    /// <summary>Lists the user's expenses, newest first, optionally limited to an inclusive date range.</summary>
     public async Task<IReadOnlyList<ExpenseResponse>> GetAllAsync(string userId, DateOnly? from, DateOnly? to)
     {
         var query = TrackedExpenseQuery(userId);
@@ -23,6 +26,7 @@ public class ExpenseService(ApplicationDbContext db, ExpenseCategoryService cate
         return expenses.Select(Map).ToList();
     }
 
+    /// <summary>Returns one expense, or null if it does not exist or belongs to another user.</summary>
     public async Task<ExpenseResponse?> GetByIdAsync(string userId, Guid id)
     {
         var expense = await TrackedExpenseQuery(userId)
@@ -31,6 +35,7 @@ public class ExpenseService(ApplicationDbContext db, ExpenseCategoryService cate
         return expense is null ? null : Map(expense);
     }
 
+    /// <summary>Totals the user's spending, overall and per category title, over an optional date range.</summary>
     public async Task<ExpenseSummaryResponse> GetSummaryAsync(string userId, DateOnly? from, DateOnly? to)
     {
         var query = db.Expenses.AsNoTracking()
@@ -58,6 +63,7 @@ public class ExpenseService(ApplicationDbContext db, ExpenseCategoryService cate
             byCategory);
     }
 
+    /// <summary>Lists the shared payment-method lookup values for the expense form.</summary>
     public async Task<IReadOnlyList<PaymentMethodResponse>> GetPaymentMethodsAsync()
     {
         return await db.PaymentMethods.AsNoTracking()
@@ -66,6 +72,10 @@ public class ExpenseService(ApplicationDbContext db, ExpenseCategoryService cate
             .ToListAsync();
     }
 
+    /// <summary>
+    /// Budget calculator (what-if): totals planned expenses against a monthly income and returns the
+    /// savings rate. Nothing is saved; zero or negative income gives a 0% rate instead of dividing by zero.
+    /// </summary>
     public ExpenseCalculatorResponse Calculate(ExpenseCalculatorRequest request)
     {
         var byCategory = request.Expenses
@@ -81,6 +91,10 @@ public class ExpenseService(ApplicationDbContext db, ExpenseCategoryService cate
         return new ExpenseCalculatorResponse(total, remaining, savingsRate, byCategory);
     }
 
+    /// <summary>
+    /// Records an expense in one of the user's categories. Throws <see cref="ArgumentException"/> for an
+    /// amount of zero or less or an unknown category.
+    /// </summary>
     public async Task<ExpenseResponse> CreateAsync(string userId, ExpenseRequest request)
     {
         ValidateAmount(request.Amount);
@@ -104,6 +118,7 @@ public class ExpenseService(ApplicationDbContext db, ExpenseCategoryService cate
         return Map(expense);
     }
 
+    /// <summary>Edits one of the user's expenses with the same validation as create; null if not theirs.</summary>
     public async Task<ExpenseResponse?> UpdateAsync(string userId, Guid id, ExpenseRequest request)
     {
         ValidateAmount(request.Amount);
@@ -132,6 +147,7 @@ public class ExpenseService(ApplicationDbContext db, ExpenseCategoryService cate
         return Map(expense);
     }
 
+    /// <summary>Deletes one of the user's expenses. Returns false if it is not found or not theirs.</summary>
     public async Task<bool> DeleteAsync(string userId, Guid id)
     {
         var expense = await db.Expenses
@@ -147,6 +163,8 @@ public class ExpenseService(ApplicationDbContext db, ExpenseCategoryService cate
         return true;
     }
 
+    // Enforced here, not only in the React form, so Swagger, scripts and other clients cannot store
+    // zero or negative amounts that would distort every total (defect DEF-02).
     private static void ValidateAmount(decimal amount)
     {
         if (amount <= 0)
@@ -155,12 +173,16 @@ public class ExpenseService(ApplicationDbContext db, ExpenseCategoryService cate
         }
     }
 
+    // Despite the name this query is read-only (AsNoTracking); it is the shared "user's expenses with
+    // category and payment method" projection for the list and detail reads.
     private IQueryable<Expense> TrackedExpenseQuery(string userId) =>
         db.Expenses.AsNoTracking()
             .Include(e => e.Category)
             .Include(e => e.PaymentMethod)
             .ForUser(userId);
 
+    // Blank means "Other". An unknown name is added to the shared PaymentMethods table rather than
+    // rejected, so any user can grow the global list; the unique index stops exact duplicates.
     private async Task<PaymentMethod> ResolvePaymentMethodAsync(string name)
     {
         var normalized = string.IsNullOrWhiteSpace(name) ? PaymentMethodNames.Other : name.Trim();
