@@ -6,11 +6,14 @@ using OraEarn.Api.VisaCompliance;
 
 namespace OraEarn.Api.Admin;
 
+// New accounts start as Pending and cannot sign in until an admin approves them (AuthService checks the
+// status at login). This service holds the admin side of that gate.
 public class RegistrationApprovalService(
     UserManager<ApplicationUser> userManager,
     RegistrationApprovalAdvisorService advisorService,
     VisaDocumentStorageService documentStorage)
 {
+    /// <summary>Lists registrations still awaiting a decision, oldest first.</summary>
     public async Task<IReadOnlyList<PendingRegistrationResponse>> GetPendingAsync()
     {
         var users = await userManager.Users
@@ -21,12 +24,14 @@ public class RegistrationApprovalService(
         return users.Select(Map).ToList();
     }
 
+    /// <summary>Returns one registration's details whatever its status, or null if the user does not exist.</summary>
     public async Task<PendingRegistrationResponse?> GetByIdAsync(string userId)
     {
         var user = await userManager.FindByIdAsync(userId);
         return user is null ? null : Map(user);
     }
 
+    /// <summary>Approves a registration and records who decided, when, and any notes.</summary>
     public async Task<(bool Success, string? Error)> ApproveAsync(string userId, string adminUserId, string? notes)
     {
         var user = await userManager.FindByIdAsync(userId);
@@ -48,6 +53,7 @@ public class RegistrationApprovalService(
         return (true, null);
     }
 
+    /// <summary>Rejects a registration and records who decided, when, and any notes.</summary>
     public async Task<(bool Success, string? Error)> RejectAsync(string userId, string adminUserId, string? notes)
     {
         var user = await userManager.FindByIdAsync(userId);
@@ -56,6 +62,9 @@ public class RegistrationApprovalService(
             return (false, "Registration not found.");
         }
 
+        // Unlike ApproveAsync there is no status guard, so an approved user can be rejected later. That blocks new
+        // sign-ins, but an existing refresh token keeps working because refresh does not re-check approval.
+        // ApprovedAt/ApprovedByUserId hold the decision time and admin for rejections too.
         user.ApprovalStatus = AccountApprovalStatus.Rejected;
         user.ApprovedAt = DateTime.UtcNow;
         user.ApprovedByUserId = adminUserId;
@@ -64,6 +73,10 @@ public class RegistrationApprovalService(
         return (true, null);
     }
 
+    /// <summary>
+    /// Runs the local rule checklist (no call to the Python service) and saves a one-line result on the user
+    /// so it shows in the pending list. The admin still makes the decision.
+    /// </summary>
     public async Task<RegistrationAiReviewResponse?> RunAiReviewAsync(string userId)
     {
         var user = await userManager.FindByIdAsync(userId);
@@ -79,6 +92,7 @@ public class RegistrationApprovalService(
         return review;
     }
 
+    /// <summary>Resolves the stored visa document for the admin download endpoint, or nulls if the file is missing.</summary>
     public (string? FullPath, string? FileName, string? ContentType) GetDocumentInfo(ApplicationUser user)
     {
         var fullPath = documentStorage.GetFullPath(user.VisaDocumentPath);
@@ -93,6 +107,7 @@ public class RegistrationApprovalService(
             ".pdf" => "application/pdf",
             ".png" => "image/png",
             ".webp" => "image/webp",
+            // Uploads are limited to pdf/jpg/jpeg/png/webp, so the fallback only covers .jpg and .jpeg.
             _ => "image/jpeg"
         };
 
