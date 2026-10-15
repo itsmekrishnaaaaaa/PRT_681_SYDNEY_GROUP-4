@@ -1,3 +1,4 @@
+// Client-side checks are for quick feedback only; the API runs its own validation and is the authority.
 /** Small validation helpers — return an error string or undefined when valid. */
 
 export const validators = {
@@ -7,6 +8,7 @@ export const validators = {
 
   email(value: string, message = 'Enter a valid email address.') {
     if (!value.trim()) return message;
+    // Deliberately loose; the API does the real email validation.
     return value.includes('@') && value.includes('.') ? undefined : message;
   },
 
@@ -36,6 +38,8 @@ export const validators = {
 
   futureDate(value: string, message = 'Date must be in the future.') {
     if (!value) return message;
+    // Compares yyyy-mm-dd strings against today's UTC date. In eastern Australia the UTC date lags until 10-11am,
+    // so during the morning today's local date still counts as "future".
     return value > new Date().toISOString().slice(0, 10) ? undefined : message;
   },
 
@@ -45,6 +49,7 @@ export const validators = {
 
   fileTypes(file: File | null | undefined, types: string[], message?: string) {
     if (!file) return undefined;
+    // Uses the browser-reported MIME type; the server re-checks the file extension on upload.
     return types.includes(file.type)
       ? undefined
       : message ?? `Allowed types: ${types.join(', ')}.`;

@@ -19,6 +19,7 @@ export function useFormValidation<T extends string = string>() {
 
   const clearAll = useCallback(() => setErrors({}), []);
 
+  // Replaces all field errors with one form-level message (e.g. a server error), shown by FormErrorSummary.
   const setFormError = useCallback((message: string, formErrorKey = '_form' as T) => {
     setErrors({ [formErrorKey]: message } as FieldErrors<T>);
   }, []);
@@ -32,6 +33,7 @@ export function useFormValidation<T extends string = string>() {
   const hasErrors = errorCount > 0;
 
   /** Run validator, store errors, return true when the form is valid. */
+  // validate() replaces the whole error map, so errors fixed since the last submit disappear.
   const validate = useCallback((run: () => FieldErrors<T>) => {
     const next = run();
     setErrors(next);

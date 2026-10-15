@@ -49,6 +49,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     };
 
+    // Safety net: if /auth/me (plus a possible token refresh) has not answered in 20s, treat the session as
+    // gone so the app never sits on the loading screen.
     const timeout = window.setTimeout(() => {
       clearStoredAuth();
       setLoading(false);

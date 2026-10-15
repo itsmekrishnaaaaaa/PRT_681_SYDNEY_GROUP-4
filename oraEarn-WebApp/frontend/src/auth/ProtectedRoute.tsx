@@ -1,6 +1,11 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 
+// These guards only decide what the browser shows. The API enforces access itself with [Authorize] and
+// role checks; the guards are not a security boundary.
+
+// Signed-in student area. While AuthContext is still checking the stored session, show a placeholder
+// instead of redirecting, otherwise a page reload would briefly bounce a valid user to /login.
 export function ProtectedRoute() {
   const { user, loading } = useAuth();
 
@@ -16,6 +21,7 @@ export function ProtectedRoute() {
     return <Navigate to="/login" replace />;
   }
 
+  // Admin accounts only use the admin area, so they are sent there rather than to the student dashboard.
   if (user.roles.includes('Admin')) {
     return <Navigate to="/admin" replace />;
   }
@@ -23,6 +29,7 @@ export function ProtectedRoute() {
   return <Outlet />;
 }
 
+// Admin-only area; signed-in non-admins go back to the student dashboard.
 export function AdminRoute() {
   const { user, loading, isAdmin } = useAuth();
 
@@ -45,6 +52,7 @@ export function AdminRoute() {
   return <Outlet />;
 }
 
+// Login and register pages; anyone already signed in is sent to their home page instead.
 export function GuestRoute() {
   const { user, loading } = useAuth();
 

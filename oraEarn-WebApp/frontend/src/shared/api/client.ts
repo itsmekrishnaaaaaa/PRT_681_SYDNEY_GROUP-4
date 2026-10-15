@@ -7,10 +7,16 @@ export const api = axios.create({
   timeout: 15000,
 });
 
+// _retry marks a request that has already been replayed after a refresh, so a second 401 is final.
 type RetryConfig = InternalAxiosRequestConfig & { _retry?: boolean };
 
+// The one in-flight refresh, shared by every request that gets a 401 at the same time. The API rotates the
+// refresh token on each use, so two parallel refresh calls would send the same token and the second would
+// fail and log the user out (NFR-4.4). Reset to null once the refresh settles.
 let refreshPromise: Promise<string | null> | null = null;
 
+// Tokens live in localStorage under "auth" so a reload keeps the session. Any script on the page can read
+// them, which is the usual trade-off against cookies; the choice is not recorded beyond that.
 const getStoredAuth = () => {
   const raw = localStorage.getItem('auth');
   return raw ? JSON.parse(raw) as { accessToken: string; refreshToken: string } : null;
@@ -26,6 +32,7 @@ const setStoredAuth = (accessToken: string, refreshToken: string) => {
 
 export const clearStoredAuth = () => localStorage.removeItem('auth');
 
+// Reads storage on every request so a token saved by a refresh is picked up straight away.
 api.interceptors.request.use((config) => {
   const auth = getStoredAuth();
   if (auth?.accessToken) {
@@ -45,6 +52,7 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    // Only a 401 on a request that has not been retried yet triggers a refresh.
     if (!original || error.response?.status !== 401 || original._retry) {
       return Promise.reject(error);
     }
@@ -65,6 +73,8 @@ api.interceptors.response.use(
           setStoredAuth(accessToken, refreshToken);
           return accessToken as string;
         })
+        // A failed refresh means the session is over. This clears storage but does not update AuthContext,
+        // so the user is only sent to /login on the next page reload.
         .catch(() => {
           clearStoredAuth();
           return null;
@@ -79,11 +89,14 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    // Replay the original request once with the new access token.
     original.headers.Authorization = `Bearer ${newToken}`;
     return api(original);
   },
 );
 
+// Controllers return { message }, while ASP.NET validation failures return ProblemDetails (title/detail),
+// so both shapes are checked before falling back to a generic message.
 export const getErrorMessage = (error: unknown, fallback = 'Something went wrong') => {
   if (axios.isAxiosError(error)) {
     const data = error.response?.data;
