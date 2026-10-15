@@ -83,6 +83,7 @@ public class ExpenseService(ApplicationDbContext db, ExpenseCategoryService cate
 
     public async Task<ExpenseResponse> CreateAsync(string userId, ExpenseRequest request)
     {
+        ValidateAmount(request.Amount);
         var category = await categoryService.GetEntityAsync(userId, request.CategoryId)
             ?? throw new ArgumentException("Expense category not found.");
         var paymentMethod = await ResolvePaymentMethodAsync(request.PaymentMethod);
@@ -105,6 +106,7 @@ public class ExpenseService(ApplicationDbContext db, ExpenseCategoryService cate
 
     public async Task<ExpenseResponse?> UpdateAsync(string userId, Guid id, ExpenseRequest request)
     {
+        ValidateAmount(request.Amount);
         var expense = await db.Expenses
             .Include(e => e.Category)
             .Include(e => e.PaymentMethod)
@@ -143,6 +145,14 @@ public class ExpenseService(ApplicationDbContext db, ExpenseCategoryService cate
         db.Expenses.Remove(expense);
         await db.SaveChangesAsync();
         return true;
+    }
+
+    private static void ValidateAmount(decimal amount)
+    {
+        if (amount <= 0)
+        {
+            throw new ArgumentException("Amount must be greater than zero.");
+        }
     }
 
     private IQueryable<Expense> TrackedExpenseQuery(string userId) =>

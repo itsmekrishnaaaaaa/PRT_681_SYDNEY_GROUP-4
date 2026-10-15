@@ -18,7 +18,7 @@ public class AuthController(
     [RequestSizeLimit(6_000_000)]
     public async Task<ActionResult<RegisterResponse>> Register(
         [FromForm] RegisterRequest request,
-        [FromForm] IFormFile visaDocument)
+        IFormFile visaDocument)
     {
         var (success, response, error) = await authService.RegisterAsync(request, visaDocument);
         if (!success)

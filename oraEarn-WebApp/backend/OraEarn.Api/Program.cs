@@ -9,7 +9,14 @@ var localSettings = Path.Combine(builder.Environment.ContentRootPath, "appsettin
 var localExample = Path.Combine(builder.Environment.ContentRootPath, "appsettings.Local.json.example");
 if (!File.Exists(localSettings) && File.Exists(localExample))
 {
-    File.Copy(localExample, localSettings);
+    try
+    {
+        File.Copy(localExample, localSettings);
+    }
+    catch (IOException) when (File.Exists(localSettings))
+    {
+        // Another host instance created it first (e.g. parallel test factories).
+    }
 }
 
 builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);

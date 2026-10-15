@@ -19,17 +19,31 @@ public class ExpenseCategoriesController(ExpenseCategoryService categoryService)
     [HttpPost]
     public async Task<ActionResult<ExpenseCategoryResponse>> Create(ExpenseCategoryRequest request)
     {
-        var userId = GetUserId();
-        var category = await categoryService.CreateAsync(userId, request);
-        return Ok(category);
+        try
+        {
+            var userId = GetUserId();
+            var category = await categoryService.CreateAsync(userId, request);
+            return Ok(category);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<ExpenseCategoryResponse>> Update(Guid id, ExpenseCategoryRequest request)
     {
-        var userId = GetUserId();
-        var category = await categoryService.UpdateAsync(userId, id, request);
-        return category is null ? NotFound() : Ok(category);
+        try
+        {
+            var userId = GetUserId();
+            var category = await categoryService.UpdateAsync(userId, id, request);
+            return category is null ? NotFound() : Ok(category);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [HttpDelete("{id:guid}")]

@@ -36,7 +36,7 @@ public class ExpenseCategoryService(ApplicationDbContext db)
         var category = new ExpenseCategory
         {
             UserId = userId,
-            Title = request.Title
+            Title = ValidateTitle(request.Title)
         };
 
         db.ExpenseCategories.Add(category);
@@ -46,13 +46,14 @@ public class ExpenseCategoryService(ApplicationDbContext db)
 
     public async Task<ExpenseCategoryResponse?> UpdateAsync(string userId, Guid id, ExpenseCategoryRequest request)
     {
+        var title = ValidateTitle(request.Title);
         var category = await db.ExpenseCategories.SingleOrDefaultAsync(c => c.Id == id && c.UserId == userId);
         if (category is null)
         {
             return null;
         }
 
-        category.Title = request.Title;
+        category.Title = title;
         await db.SaveChangesAsync();
         return Map(category);
     }
@@ -69,6 +70,11 @@ public class ExpenseCategoryService(ApplicationDbContext db)
         await db.SaveChangesAsync();
         return true;
     }
+
+    private static string ValidateTitle(string? title) =>
+        string.IsNullOrWhiteSpace(title)
+            ? throw new ArgumentException("Category title is required.")
+            : title.Trim();
 
     private static ExpenseCategoryResponse Map(ExpenseCategory category) =>
         new(category.Id, category.Title);
