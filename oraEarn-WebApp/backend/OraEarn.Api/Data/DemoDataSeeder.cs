@@ -111,8 +111,8 @@ public static class DemoDataSeeder
         });
 
         await SeedAliceAsync(db, alice, today, weekStart);
-        await SeedBobAsync(db, bob, weekStart);
-        await SeedCarolAsync(db, carol, weekStart);
+        await SeedBobAsync(db, bob, today, weekStart);
+        await SeedCarolAsync(db, carol, today, weekStart);
 
         await db.SaveChangesAsync();
     }
@@ -225,7 +225,7 @@ public static class DemoDataSeeder
         }
 
         var categories = AddCategories(db, user.Id, ["Rent", "Food", "Transport", "Utilities", "Entertainment"]);
-        AddExpenses(db, categories, weekStart,
+        AddExpenses(db, categories, today,
         [
             ("Rent", 950m, ExpenseKind.Fixed, "Bank Transfer", 0),
             ("Food", 85.50m, ExpenseKind.Variable, "Card", 1),
@@ -263,7 +263,7 @@ public static class DemoDataSeeder
     }
 
     /// <summary>Bob — Australian citizen, full work rights, ~43 hrs/week (legal).</summary>
-    private static async Task SeedBobAsync(ApplicationDbContext db, ApplicationUser user, DateOnly weekStart)
+    private static async Task SeedBobAsync(ApplicationDbContext db, ApplicationUser user, DateOnly today, DateOnly weekStart)
     {
         var warehouse = new Job
         {
@@ -293,7 +293,7 @@ public static class DemoDataSeeder
         ]);
 
         var categories = AddCategories(db, user.Id, ["Rent", "Food", "Transport", "Insurance", "Subscriptions"]);
-        AddExpenses(db, categories, weekStart,
+        AddExpenses(db, categories, today,
         [
             ("Rent", 1100m, ExpenseKind.Fixed, "Bank Transfer", 0),
             ("Insurance", 95m, ExpenseKind.Fixed, "Bank Transfer", 0),
@@ -331,7 +331,7 @@ public static class DemoDataSeeder
     }
 
     /// <summary>Carol — permanent resident (TR), full work rights, standard office hours.</summary>
-    private static async Task SeedCarolAsync(ApplicationDbContext db, ApplicationUser user, DateOnly weekStart)
+    private static async Task SeedCarolAsync(ApplicationDbContext db, ApplicationUser user, DateOnly today, DateOnly weekStart)
     {
         var office = new Job
         {
@@ -354,7 +354,7 @@ public static class DemoDataSeeder
         ]);
 
         var categories = AddCategories(db, user.Id, ["Rent", "Groceries", "Phone", "Health", "Dining"]);
-        AddExpenses(db, categories, weekStart,
+        AddExpenses(db, categories, today,
         [
             ("Rent", 880m, ExpenseKind.Fixed, "Bank Transfer", 0),
             ("Groceries", 112m, ExpenseKind.Variable, "Card", 1),
@@ -433,17 +433,19 @@ public static class DemoDataSeeder
     private static void AddExpenses(
         ApplicationDbContext db,
         Dictionary<string, ExpenseCategory> categories,
-        DateOnly weekStart,
-        (string Category, decimal Amount, ExpenseKind Kind, string Payment, int DayOffset)[] items)
+        DateOnly today,
+        (string Category, decimal Amount, ExpenseKind Kind, string Payment, int DaysAgo)[] items)
     {
-        foreach (var (categoryTitle, amount, kind, payment, dayOffset) in items)
+        foreach (var (categoryTitle, amount, kind, payment, daysAgo) in items)
         {
             db.Expenses.Add(new Expense
             {
                 CategoryId = categories[categoryTitle].Id,
                 PaymentMethodId = ResolveSeedPaymentMethodId(db, payment),
                 Amount = amount,
-                Date = weekStart.AddDays(dayOffset),
+                // Counted back from today so no demo expense is ever future-dated (OBS-02); offsets 0-6
+                // keep every item inside the default 7-day dashboard period.
+                Date = today.AddDays(-daysAgo),
                 ExpenseKind = kind,
             });
         }
