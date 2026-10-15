@@ -11,11 +11,26 @@ using OraEarn.Api.Notifications;
 
 namespace OraEarn.Api.VisaCompliance;
 
+// Enforces requirement NFR-7.1: an Australian student visa holder may work at most 48 hours per
+// fortnight during study periods (the Home Affairs work condition the user-facing messages refer to).
+//
+// Known simplifications, kept deliberately small for this project and worth checking against the
+// current Home Affairs wording before relying on it:
+// - The "fortnight" is a rolling 14-day window ending today, not a fixed fortnight calendar.
+// - There is no study-period vs. scheduled-break distinction; the limit applies all year.
+// - "Today" is the UTC date, so for Australian users the window moves at 10-11am local time.
 public class VisaComplianceService(ApplicationDbContext db)
 {
     public const decimal StudentFortnightHourLimit = 48m;
+
+    // Warn from 85% of the limit (40.8 h, leaving 7.2 h). The ratio is an app choice, not part of
+    // the visa rule; the code does not record why 85% was picked.
     private const decimal NearLimitRatio = 0.85m;
 
+    /// <summary>
+    /// Returns the user's hours in the rolling 14-day window and whether they are near or over the
+    /// 48-hour student limit. Non-student users get <c>Applies = false</c>.
+    /// </summary>
     public async Task<VisaComplianceResponse> GetStatusAsync(string userId)
     {
         var user = await db.Users.AsNoTracking().SingleOrDefaultAsync(u => u.Id == userId)
@@ -36,10 +51,13 @@ public class VisaComplianceService(ApplicationDbContext db)
                 DateOnly.FromDateTime(DateTime.UtcNow));
         }
 
+        // -13, not -14: the window is inclusive at both ends, so today plus the 13 days before it is
+        // exactly 14 calendar days. A shift dated 14 days ago has already dropped out.
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
         var fortnightStart = today.AddDays(-13);
         var hours = await SumFortnightHoursAsync(userId, fortnightStart, today);
 
+        // Exactly 48 hours is allowed; only going above it counts as over the limit.
         var remaining = Math.Max(0, StudentFortnightHourLimit - hours);
         var isOver = hours > StudentFortnightHourLimit;
         var isNear = !isOver && hours >= StudentFortnightHourLimit * NearLimitRatio;
@@ -57,6 +75,11 @@ public class VisaComplianceService(ApplicationDbContext db)
             today);
     }
 
+    /// <summary>
+    /// Throws <see cref="InvalidOperationException"/> if saving a shift of <paramref name="shiftHours"/>
+    /// would take a student over 48 hours in the current window. Pass <paramref name="excludeShiftId"/>
+    /// when editing so the shift's previous hours are not counted twice.
+    /// </summary>
     public async Task ValidateShiftAsync(
         string userId,
         decimal shiftHours,
@@ -69,6 +92,9 @@ public class VisaComplianceService(ApplicationDbContext db)
             return;
         }
 
+        // Only shifts inside the current window are checked. A back-dated shift older than 14 days
+        // cannot change today's total, but note that future-dated shifts are also skipped: the rule
+        // is enforced against hours already worked, not against a planned roster.
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
         var fortnightStart = today.AddDays(-13);
         if (workDate < fortnightStart || workDate > today)
@@ -89,6 +115,10 @@ public class VisaComplianceService(ApplicationDbContext db)
         }
     }
 
+    /// <summary>
+    /// Turns a compliance status into at most one bell notification: error when over the limit,
+    /// warning from 85%, and an info nudge once 8 or fewer hours remain.
+    /// </summary>
     public List<SavingsNotification> BuildNotifications(VisaComplianceResponse status)
     {
         if (!status.Applies)
@@ -144,6 +174,8 @@ public class VisaComplianceService(ApplicationDbContext db)
         return await query.SumAsync(s => s.TotalHours);
     }
 
+    // Either field can mark a student because both are free text captured at registration; matching
+    // on both avoids missing a student whose visa status and work-rights answers differ.
     private static bool IsStudentLimited(ApplicationUser user) =>
         user.WorkingRights.Equals("Student", StringComparison.OrdinalIgnoreCase)
         || user.VisaStatus.Equals("Student", StringComparison.OrdinalIgnoreCase);
