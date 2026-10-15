@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   aiReviewRegistration,
   approveRegistration,
@@ -24,13 +24,18 @@ export function RegistrationApprovals() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     const list = await getPendingRegistrations();
     setPending(list);
-    if (list.length > 0 && !selectedId) setSelectedId(list[0].id);
-  };
+    return list;
+  }, []);
 
-  useEffect(() => { void load(); }, []);
+  // Pre-select the oldest registration on first load only; after a decision the selection stays cleared.
+  useEffect(() => {
+    void load().then((list) => {
+      if (list.length > 0) setSelectedId((current) => current ?? list[0].id);
+    });
+  }, [load]);
 
   const selected = pending.find((p) => p.id === selectedId) ?? null;
 
