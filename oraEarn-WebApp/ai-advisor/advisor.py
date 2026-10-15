@@ -4,18 +4,27 @@ from models import AdvisorContext, ChatResponse, GoalContext
 
 
 def _active(goals: list[GoalContext]) -> list[GoalContext]:
+    """Goals that are not finished yet (Pending or InProgress)."""
     return [g for g in goals if g.status != "Completed"]
 
 
 def _in_progress(goals: list[GoalContext]) -> list[GoalContext]:
+    """Goals with some savings but not complete, used to suggest which goal to push next."""
     return [g for g in goals if g.status == "InProgress"]
 
 
 def _full_name(ctx: AdvisorContext) -> str:
+    """First and last name, or an empty string when neither is on the profile."""
     return f"{ctx.user.first_name} {ctx.user.last_name}".strip()
 
 
 def _intent(message: str) -> str:
+    """Pick a reply topic from keywords in the message; the first matching rule wins.
+
+    Rules are plain substring checks, so order matters: specific questions (name, visa, hours worked) are
+    tested before the short greetings and catch-all topics. Known limitation: short keywords also match
+    inside other words, e.g. "ta" in "status" gives "thanks" and "hi" in "shift" or "this" gives "greet".
+    """
     lower = message.lower().strip()
 
     if any(p in lower for p in ("my name", "what is my name", "what's my name", "who am i", "whats my name")):
@@ -52,6 +61,12 @@ def _intent(message: str) -> str:
 
 
 def _say(intent: str, ctx: AdvisorContext) -> str:
+    """Build a short reply for the intent from the user, visa and analytics context.
+
+    The visa figures (48-hour cap, remaining hours, near/over limit) are computed by the .NET
+    VisaComplianceService and only read here. A few reply strings still say "48" literally, so update them
+    too if the limit ever changes.
+    """
     u = ctx.user
     v = ctx.visa
     a = ctx.analytics
@@ -158,5 +173,6 @@ def _say(intent: str, ctx: AdvisorContext) -> str:
 
 
 def chat(message: str, ctx: AdvisorContext) -> ChatResponse:
+    """Entry point used by the endpoint. Suggestions stay empty but the field is kept for the API contract."""
     reply = _say(_intent(message), ctx)
     return ChatResponse(reply=reply, suggestions=[])
