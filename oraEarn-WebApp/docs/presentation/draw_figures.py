@@ -274,53 +274,63 @@ def _flow_boxes(d, boxes, y, h):
 
 
 def architecture():
-    img = Image.new("RGB", (2400, 1100), WHITE)
+    """Teacher form: client, presentation, business logic, data access. Real OraEarn types."""
+    img = Image.new("RGB", (2400, 820), (244, 240, 230))
     d = ImageDraw.Draw(img)
-    d.text((40, 16), "Service-based MVC", font=font(28, True), fill=INK)
-    d.text((40, 58), "The controller never opens the database. A service does.", font=font(20), fill=MUTED)
+    navy = (20, 32, 43)
+    copper = (181, 104, 61)
+    d.text((48, 24), "THREE LAYERS", font=font(18, True), fill=copper)
+    d.text((48, 54), "The page never opens the database.", font=font(32, True), fill=navy)
 
-    boxes = [
-        (40, 400, "View", ["React pages", "Jobs, shifts, money", "Port 5173"]),
-        (520, 400, "Controller", ["ASP.NET controllers", "JWT on the route", "Port 5203"]),
-        (1000, 400, "Service", ["ShiftService", "AuthService", "VisaCompliance"]),
-        (1480, 400, "Model", ["Entity classes", "EF Core", "DbContext"]),
-        (1960, 400, "Database", ["PostgreSQL", "The tables", "SQL"]),
+    layers = [
+        (48, "Client", (232, 226, 214), ["React pages", "Jobs, shifts, money", "Port 5173"]),
+        (640, "Presentation layer", (214, 226, 236), ["API controllers", "JWT checked here", "Port 5203"]),
+        (1232, "Business logic layer", (214, 232, 220), ["ShiftService", "VisaComplianceService", "Auth and money services"]),
+        (1824, "Data access layer", (242, 224, 214), ["ApplicationDbContext", "EF Core", "PostgreSQL"]),
     ]
-    _flow_boxes(d, boxes, 120, 300)
-    paste_logo(img, "react.png", 40 + 400 - 88, 186, 64)
-    paste_logo(img, "dotnet.png", 520 + 400 - 88, 186, 64)
-    paste_logo(img, "postgres.png", 1960 + 400 - 88, 186, 64)
-    roles = ["MVC  ·  View", "MVC  ·  Controller", "Service layer", "MVC  ·  Model", "Data"]
-    for (x, w, _, _), role in zip(boxes, roles):
-        d.text((x + w / 2, 440), role, font=font(16, True), fill=MUTED, anchor="mm")
+    y, h, w = 130, 250, 520
+    for x, title, fill, lines in layers:
+        d.rounded_rectangle((x, y, x + w, y + h), radius=16, fill=fill, outline=navy, width=3)
+        d.text((x + 28, y + 22), title, font=font(26, True), fill=navy)
+        yy = y + 78
+        for line in lines:
+            d.text((x + 28, yy), line, font=font(24), fill=INK)
+            yy += 40
 
-    labels = [(480, "HTTP + JWT"), (960, "calls"), (1440, "uses"), (1920, "SQL")]
-    for x, label in labels:
-        f = font(15, True)
+    gaps = [(568, 640, "HTTP + JWT"), (1160, 1232, "calls"), (1752, 1824, "EF Core")]
+    mid = y + 150
+    for x1, x2, label in gaps:
+        d.line((x1, mid, x2 - 16, mid), fill=navy, width=4)
+        d.polygon([(x2 - 16, mid - 9), (x2 - 16, mid + 9), (x2, mid)], fill=navy)
+        f = font(16, True)
         tw = d.textlength(label, font=f)
-        d.rectangle((x - tw / 2 - 4, 248, x + tw / 2 + 4, 272), fill=WHITE)
-        d.text((x - tw / 2, 248), label, font=f, fill=INK)
+        cx = (x1 + x2) / 2
+        d.rectangle((cx - tw / 2 - 6, mid - 34, cx + tw / 2 + 6, mid - 8), fill=(244, 240, 230))
+        d.text((cx - tw / 2, mid - 34), label, font=f, fill=navy)
 
-    d.line((1320, 420, 1320, 560), fill=INK, width=3)
-    d.polygon([(1312, 546), (1328, 546), (1320, 560)], fill=INK)
-    d.rounded_rectangle((980, 560, 1420, 760), radius=12, fill=SOFT, outline=INK, width=2)
-    paste_logo(img, "python.png", 1004, 628, 72)
-    d.text((1090, 600), "Aura", font=font(22, True), fill=INK)
-    d.text((1090, 648), "Python, port 8000", font=font(18), fill=INK)
-    d.text((1090, 688), "The API calls it.", font=font(18), fill=MUTED)
+    # Aura sits under the business box. The return line runs below it, so the two do not cross.
+    aura_top = y + h + 36
+    d.line((1492, y + h, 1492, aura_top), fill=navy, width=3)
+    d.polygon([(1483, aura_top - 14), (1501, aura_top - 14), (1492, aura_top)], fill=navy)
+    d.rounded_rectangle((1232, aura_top, 1752, aura_top + 168), radius=16, fill=(255, 252, 247), outline=navy, width=3)
+    d.text((1260, aura_top + 18), "Aura", font=font(26, True), fill=navy)
+    d.text((1260, aura_top + 62), "PythonAdvisorClient calls port 8000.", font=font(22), fill=INK)
+    d.text((1260, aura_top + 100), "The page does not call Python.", font=font(22), fill=INK)
+    d.text((1260, aura_top + 132), "Aura does not open PostgreSQL.", font=font(20), fill=MUTED)
 
-    d.line((2360, 270, 2384, 270), fill=INK, width=2)
-    d.line((2384, 270, 2384, 830), fill=INK, width=2)
-    d.line((2384, 830, 254, 830), fill=INK, width=2)
-    d.polygon([(268, 822), (268, 838), (240, 830)], fill=INK)
-    f = font(18, True)
-    label = "JSON returns to the page"
+    back = aura_top + 210
+    d.line((2084, y + h, 2084, back), fill=copper, width=3)
+    d.line((2084, back, 308, back), fill=copper, width=3)
+    d.line((308, back, 308, y + h + 16), fill=copper, width=3)
+    d.polygon([(299, y + h + 16), (317, y + h + 16), (308, y + h)], fill=copper)
+    f = font(20, True)
+    label = "Response returns through each layer to the client"
     tw = d.textlength(label, font=f)
-    d.text((1100 - tw / 2, 788), label, font=f, fill=INK)
+    d.rectangle((700 - 8, back - 36, 700 + tw + 8, back - 6), fill=(244, 240, 230))
+    d.text((700, back - 34), label, font=f, fill=copper)
 
-    d.text((40, 900), "1  The page sends the request with the JWT.", font=font(22), fill=INK)
-    d.text((40, 948), "2  The controller calls a service.  3  The service uses EF Core.  4  PostgreSQL answers.", font=font(22), fill=INK)
-    d.text((40, 1004), "SignalR uses the same API and the same token. Hub: /hubs/shifts.", font=font(20), fill=MUTED)
+    d.text((48, back + 28), "ShiftsHub is on the API. Same JWT.  /hubs/shifts", font=font(22), fill=INK)
+    d.text((48, back + 68), "There is no repository class. The service uses ApplicationDbContext.", font=font(22), fill=MUTED)
     return save(img, "diagram-architecture.png")
 
 

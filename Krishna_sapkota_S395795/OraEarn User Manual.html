@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OraEarn User Manual</title>
+<style>
+:root{--bg:#fff;--fg:#1f2937;--mut:#64748b;--card:#f1f5f9;--bd:#e2e8f0;--ac:#0f766e;--hd:#211645;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1220;--fg:#e5e7eb;--mut:#94a3b8;--card:#1a1f33;--bd:#2d3350;--ac:#2dd4bf}}
+:root[data-theme="dark"]{--bg:#0f1220;--fg:#e5e7eb;--mut:#94a3b8;--card:#1a1f33;--bd:#2d3350;--ac:#2dd4bf}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 Calibri,"Segoe UI",system-ui,sans-serif}
+header{background:var(--hd);color:#fff;padding:28px 20px}
+.w{max-width:820px;margin:0 auto;padding:0 20px}
+header .w{padding:0}
+header img{height:52px;display:block;margin-bottom:18px}
+h1{font-size:2.2rem;margin:0 0 6px}
+header p{margin:2px 0;color:#cbd5e1}
+h2{font-size:1.35rem;margin:2.2rem 0 .5rem;padding-bottom:.3rem;border-bottom:2px solid var(--ac)}
+h3{font-size:1.05rem;margin:1.2rem 0 .3rem}
+nav{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px 20px;margin:1.5rem 0}
+nav ol{columns:2;margin:0;padding-left:1.2rem}
+nav a{color:var(--ac);text-decoration:none}
+.note{background:var(--card);border-left:4px solid var(--ac);padding:10px 14px;margin:1rem 0;border-radius:0}
+table{border-collapse:collapse;width:100%;display:block;overflow-x:auto}
+th,td{border:1px solid var(--bd);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--card)}
+code{background:var(--card);padding:1px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:.9em}
+pre{background:var(--card);padding:12px;border-radius:8px;overflow-x:auto}
+footer{color:var(--mut);font-size:.85rem;text-align:center;padding:2rem 20px}
+@media (max-width:600px){nav ol{columns:1}}
+@media print{:root{--bg:#fff;--fg:#000;--card:#f1f5f9;--bd:#cbd5e1;--ac:#0f766e}h2{break-after:avoid}.note,table{break-inside:avoid}}
+</style></head><body>
+<header><div class="w"><img src="data:image/png;base64,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" alt="Charles Darwin University"><h1>OraEarn User Manual</h1><p>Earn smart. Stay compliant. Save with purpose.</p><p>Version 1.0 | Assessment 3 | PRT_681 Group 4</p></div></header>
+<main class="w">
+<nav aria-label="Contents"><strong>Contents</strong><ol>
+<li><a href="#s1">Introduction</a></li><li><a href="#s2">Register and sign in</a></li><li><a href="#s3">Admin guide</a></li><li><a href="#s4">Jobs</a></li><li><a href="#s5">Shifts and the visa limit</a></li><li><a href="#s6">Expenses</a></li><li><a href="#s7">Savings goals</a></li><li><a href="#s8">Analytics and exports</a></li><li><a href="#s9">Aura AI advisor</a></li><li><a href="#s10">Troubleshooting</a></li><li><a href="#s11">Setup for administrators</a></li></ol></nav>
+
+<h2 id="s1">1. Introduction</h2>
+<p>OraEarn is a web application that helps student-visa workers track their work hours, money and savings in one place. It keeps users within the visa limit of 48 working hours per fortnight, shows where their money goes, and helps them reach savings goals with advice from Aura, an AI advisor.</p>
+<table><tr><th>Feature</th><th>What it does</th></tr>
+<tr><td>Jobs and shifts</td><td>Record employers, pay rates and shifts with live pay calculation.</td></tr>
+<tr><td>Visa guard</td><td>Warns near 48 hours in 14 days and blocks shifts over the limit.</td></tr>
+<tr><td>Expenses and goals</td><td>Track spending and savings goals with progress.</td></tr>
+<tr><td>Analytics and exports</td><td>Charts for 7 days to 12 months, with Excel and PDF exports.</td></tr>
+<tr><td>Aura AI</td><td>Answers money questions using your own data.</td></tr></table>
+<p>Use any current web browser such as Chrome, Edge, Firefox or Safari. An internet or network connection to the OraEarn server is required.</p>
+
+<h2 id="s2">2. Register and sign in</h2>
+<h3>Create an account</h3>
+<ol><li>Open OraEarn and select <strong>Register</strong>.</li><li>Enter your name, email and a password, and choose your visa status.</li><li>Submit the form.</li><li>You will see a message that your account is waiting for approval. You cannot sign in until an admin verifies you.</li></ol>
+<div class="note">Why approval? It keeps OraEarn limited to verified users. Approval is usually quick, so try again later or contact your admin.</div>
+<h3>Sign in and out</h3>
+<ol><li>After approval, open the sign-in page and enter your email and password.</li><li>You are taken to your dashboard. Your session is protected by a secure token and expires after a period of inactivity.</li><li>Select <strong>Log out</strong> when you finish, especially on shared computers.</li></ol>
+
+<h2 id="s3">3. Admin guide</h2>
+<ol><li>Sign in with an admin account.</li><li>Open the list of pending users.</li><li>Check each request, then select <strong>Approve</strong> or <strong>Reject</strong>.</li><li>Approved users can sign in straight away. Rejected users stay blocked.</li></ol>
+<p>Only admins can see this list. Regular users cannot view other people's data.</p>
+
+<h2 id="s4">4. Jobs</h2>
+<ol><li>Open <strong>Jobs</strong> and choose <strong>Add job</strong>.</li><li>Enter the employer name, your hourly rate and the date you started.</li><li>Save. You can edit or delete a job later.</li></ol>
+<div class="note">Add a job first. Every shift belongs to a job and uses its hourly rate.</div>
+
+<h2 id="s5">5. Shifts and the visa limit</h2>
+<h3>Log a shift</h3>
+<ol><li>Open <strong>Shifts</strong> and choose your job.</li><li>Clock in and out, or enter the start time, end time and break length.</li><li>Save. The calendar updates straight away, without refreshing the page.</li></ol>
+<p>Pay is calculated as hours worked, minus breaks, multiplied by the hourly rate. For example, an 8-hour shift with a 1-hour break at $25 per hour counts as 7 hours and earns $175.</p>
+<h3>The 48-hour visa guard</h3>
+<table><tr><th>Situation</th><th>What you see</th></tr>
+<tr><td>Student visa, under the limit</td><td>The shift saves normally.</td></tr>
+<tr><td>Student visa, close to 48 hours in 14 days</td><td>A warning shows how many hours you have used.</td></tr>
+<tr><td>Student visa, shift would pass 48 hours</td><td>The shift is blocked and not saved.</td></tr>
+<tr><td>Australian citizen</td><td>No visa limit applies.</td></tr></table>
+<p>The check covers a rolling 14-day period, so older shifts drop out of the total as time passes.</p>
+
+<h2 id="s6">6. Expenses</h2>
+<ol><li>Open <strong>Expenses</strong>. Choose or create a category.</li><li>Add an expense with the amount, date, category and payment method.</li><li>Mark the type as fixed (such as rent), variable (such as food) or one-off.</li><li>Save. You can edit or delete expenses at any time.</li></ol>
+<p>You only see your own categories and expenses.</p>
+
+<h2 id="s7">7. Savings goals</h2>
+<ol><li>Open <strong>Savings goals</strong> and choose <strong>New goal</strong>.</li><li>Enter a name and the target amount.</li><li>Set what percentage of your income goes to each goal. Allocations across all goals cannot exceed 100%.</li><li>Add contributions as you save.</li></ol>
+<p>Progress is the amount contributed divided by the target. OraEarn also estimates the hours you still need to work: the remaining amount divided by your hourly rate.</p>
+
+<h2 id="s8">8. Analytics and exports</h2>
+<ol><li>Open <strong>Analytics</strong> and pick a period from 7 days up to 12 months.</li><li>Review hours worked, income and spending.</li><li>Choose <strong>Export</strong> and select Excel or PDF.</li></ol>
+<p>Exports contain only your own data and leave out personal details such as your password.</p>
+
+<h2 id="s9">9. Aura AI advisor</h2>
+<ol><li>Open <strong>Aura</strong>.</li><li>Type a question, for example "How can I save $5000?".</li><li>Aura replies using your shifts, spending and goals.</li></ol>
+<p>If the AI service is offline, Aura switches to a built-in fallback so you still receive basic guidance. Aura gives general budgeting advice only and is not financial or legal advice.</p>
+<p>Notifications alert you to important events, such as nearing the visa limit.</p>
+
+<h2 id="s10">10. Troubleshooting</h2>
+<table><tr><th>Problem</th><th>What to do</th></tr>
+<tr><td>I cannot sign in after registering</td><td>Your account may still be pending. Wait for admin approval, then try again.</td></tr>
+<tr><td>My shift will not save</td><td>It may take you over 48 hours in 14 days. Check your recent shifts.</td></tr>
+<tr><td>The calendar does not update</td><td>Refresh the page and check your connection.</td></tr>
+<tr><td>Aura does not respond</td><td>The AI service may be offline. Use the fallback answers or try again later.</td></tr>
+<tr><td>An export is empty</td><td>Choose a period that includes shifts or expenses.</td></tr>
+<tr><td>I forgot my password</td><td>Ask an admin to help you reset it.</td></tr></table>
+
+<h2 id="s11">11. Setup for administrators</h2>
+<p>This section is for the person who runs OraEarn. You need the .NET SDK, PostgreSQL, Node.js and Python installed.</p>
+<ol><li>Start PostgreSQL.</li><li>In <code>backend/OraEarn.Api</code>, copy <code>appsettings.Local.json.example</code> to <code>appsettings.Local.json</code> and enter your database details:
+<pre>"DefaultConnection": "Host=localhost;Port=5432;Database=oraearn;Username=postgres;Password=YOUR_PASSWORD"</pre></li>
+<li>Start the API:
+<pre>dotnet run --urls http://localhost:5203</pre>The database, tables and demo data are created automatically on first start.</li>
+<li>Start the frontend and the Aura service using the steps in the project README.</li></ol>
+<div class="note">Only put your real password in <code>appsettings.Local.json</code>, never in the example file, and never commit it to Git. If you see "password authentication failed", the password in this file does not match PostgreSQL.</div>
+<p>Demo accounts for testing: <code>alice@oraearn.local</code> (student visa) and <code>bob@oraearn.local</code> (citizen), both with the password <code>User123!</code>.</p>
+</main>
+<footer>OraEarn | Charles Darwin University | Group 4: Krishna Sapkota, Dharma Bahadur Budhathoki, Jenish Gurung, Suraj Khadka</footer>
+</body></html>

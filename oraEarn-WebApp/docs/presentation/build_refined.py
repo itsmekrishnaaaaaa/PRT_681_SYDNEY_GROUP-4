@@ -1,7 +1,7 @@
-"""Ten-slide Assessment 3 deck.
+"""Assessment 3 deck.
 
-Follows OraEarn_Project_Presentation.pptx.
-White page, black text. Facts match this codebase.
+Ink header, warm paper, copper rule. Facts match this codebase.
+The ERD slide uses the final schema diagram, not the generated sketch.
 """
 
 from __future__ import annotations
@@ -20,15 +20,22 @@ SHOT = ROOT / "shots"
 OUTS = [
     ROOT / "OraEarn-Assessment3-Presentation.pptx",
     Path(r"C:\Users\budha\Downloads\OraEarn_Project_Presentation.pptx"),
+    Path(r"C:\Users\budha\Downloads\S226 PRT681_Sydney_group4_Group_presentation.pptx"),
 ]
 
-INK = RGBColor(0x11, 0x11, 0x11)
-MUTED = RGBColor(0x44, 0x44, 0x44)
-LINE = RGBColor(0x11, 0x11, 0x11)
-HAIR = RGBColor(0xC5, 0xD5, 0xD4)
-SOFT = RGBColor(0xE7, 0xF4, 0xF3)
-WHITE = RGBColor(0xFF, 0xFF, 0xFF)
-TEAL = RGBColor(0x0E, 0x7C, 0x7B)
+NAVY = RGBColor(0x14, 0x20, 0x2B)
+NAVY_2 = RGBColor(0x1C, 0x2C, 0x3A)
+INK = RGBColor(0x1C, 0x1A, 0x17)
+MUTED = RGBColor(0x5E, 0x58, 0x50)
+COPPER = RGBColor(0xB5, 0x68, 0x3D)
+CREAM = RGBColor(0xF3, 0xE6, 0xD8)
+PAPER = RGBColor(0xF4, 0xF0, 0xE6)
+WHITE = RGBColor(0xFF, 0xFC, 0xF7)
+LINE = RGBColor(0xD9, 0xD1, 0xC3)
+ERD_SRC = Path(
+    r"C:\Users\budha\.cursor\projects\c-projects-oraearn-pro\assets"
+    r"\c__Users_budha_AppData_Roaming_Cursor_User_workspaceStorage_09925ccbc39933629b0361a31c7fee49_images_FinalERD.drawio__1_-4b6cf43b-0421-43be-977d-2e2fad6f90f0.png"
+)
 
 W = Inches(13.333)
 H = Inches(7.5)
@@ -41,7 +48,7 @@ def _set_run(run, size, bold, color, font="Calibri"):
     run.font.name = font
 
 
-def text(slide, l, t, w, h, body, size=18, bold=False, color=INK, align=PP_ALIGN.LEFT, anchor=MSO_ANCHOR.TOP):
+def text(slide, l, t, w, h, body, size=18, bold=False, color=INK, align=PP_ALIGN.LEFT, anchor=MSO_ANCHOR.TOP, font="Calibri"):
     box = slide.shapes.add_textbox(Inches(l), Inches(t), Inches(w), Inches(h))
     tf = box.text_frame
     tf.word_wrap = True
@@ -62,7 +69,7 @@ def text(slide, l, t, w, h, body, size=18, bold=False, color=INK, align=PP_ALIGN
         p.space_after = Pt(0)
         run = p.add_run()
         run.text = line
-        _set_run(run, size, bold, color)
+        _set_run(run, size, bold, color, font)
     return box
 
 
@@ -99,7 +106,7 @@ def new(prs):
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     bg = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, 0, 0, W, H)
     bg.fill.solid()
-    bg.fill.fore_color.rgb = WHITE
+    bg.fill.fore_color.rgb = PAPER
     bg.line.fill.background()
     sp_tree = slide.shapes._spTree
     sp = bg._element
@@ -109,50 +116,53 @@ def new(prs):
 
 
 def header(slide, title, page):
-    rect(slide, 0, 0, 0.12, 7.5, TEAL)
-    text(slide, 0.55, 0.32, 11.2, 0.55, title, size=32, bold=True, color=INK)
-    rect(slide, 0.55, 0.98, 12.23, 0.035, TEAL)
-    text(slide, 11.4, 7.05, 1.4, 0.28, str(page), size=14, bold=True, color=TEAL, align=PP_ALIGN.RIGHT)
-    text(slide, 0.55, 7.05, 8, 0.28, "OraEarn   ·   PRT681   ·   Group 4", size=12, color=MUTED)
+    rect(slide, 0, 0, 13.333, 1.05, NAVY)
+    rect(slide, 0, 1.05, 13.333, 0.045, COPPER)
+    text(slide, 0.48, 0.14, 6, 0.22, "ORA EARN", size=11, bold=True, color=COPPER)
+    text(slide, 0.48, 0.36, 10.8, 0.58, title, size=30, bold=True, color=WHITE, font="Georgia")
+    text(slide, 11.15, 0.32, 1.7, 0.48, f"{int(page):02d}", size=22, bold=True, color=COPPER, align=PP_ALIGN.RIGHT, font="Georgia")
+    text(slide, 0.48, 7.12, 8, 0.24, "PRT681    ·    Group 4", size=12, color=MUTED)
+    text(slide, 9.3, 7.12, 3.55, 0.24, "Assessment 3", size=12, color=MUTED, align=PP_ALIGN.RIGHT)
 
 
 def card(slide, l, t, w, h):
-    rect(slide, l, t, w, h, SOFT, HAIR)
-    rect(slide, l, t, w, 0.07, TEAL)
+    rect(slide, l, t, w, h, WHITE, LINE)
+    rect(slide, l, t, 0.07, h, COPPER)
 
 
 def slide_title(prs):
     s = new(prs)
-    rect(s, 0, 0, 13.333, 0.1, TEAL)
-    rect(s, 0, 0, 0.12, 7.5, TEAL)
-    text(s, 0.6, 0.35, 12, 0.9, "OraEarn", size=54, bold=True)
-    text(s, 0.62, 1.3, 12, 0.4, "Earn smart. Stay compliant. Save with purpose.", size=20, color=MUTED)
-    text(s, 0.62, 1.75, 12, 0.35, "Assessment 3   ·   Project presentation   ·   PRT681   ·   Group 4", size=16, color=INK)
-    people = [
-        ("Krishna Sapkota", "S395795", "Database administrator\nTester"),
-        ("Dharma Bahadur Budhathoki", "S395172", "Developer\nBusiness analyst"),
-        ("Jenish Gurung", "S395321", "Business analyst\nReport writer"),
-        ("Suraj Khadka", "S394949", "Data analyst\nDatabase administrator"),
-    ]
-    x = 0.55
-    for name, sid, role in people:
-        card(s, x, 2.45, 2.95, 3.15)
-        text(s, x + 0.18, 2.7, 2.6, 0.9, name, size=16, bold=True)
-        text(s, x + 0.18, 3.65, 2.6, 0.35, sid, size=14, color=MUTED)
-        text(s, x + 0.18, 4.15, 2.6, 0.9, role, size=15)
-        x += 3.15
+    rect(s, 0, 0, 13.333, 7.5, NAVY)
+    rect(s, 0, 0, 13.333, 0.08, COPPER)
+    rect(s, 0, 7.42, 13.333, 0.08, COPPER)
+    text(s, 0.7, 0.45, 7.2, 0.28, "ASSESSMENT 3    ·    PRT681    ·    GROUP 4", size=13, bold=True, color=COPPER)
+    text(s, 0.7, 1.05, 7.4, 1.15, "OraEarn", size=60, bold=True, color=WHITE, font="Georgia")
+    text(s, 0.72, 2.35, 6.6, 0.9, "Earn smart. Stay compliant.\nSave with purpose.", size=22, color=CREAM, font="Georgia")
+    rect(s, 0.72, 3.55, 1.4, 0.045, COPPER)
     text(
         s,
-        0.6,
-        5.9,
-        12.1,
         0.7,
-        "Acknowledgements. Our tutors and lecturers, for guidance and feedback,\nand every teammate whose work built OraEarn.",
-        size=15,
-        color=MUTED,
+        6.35,
+        6.8,
+        0.7,
+        "Our tutors and lecturers, for guidance and feedback,\nand every teammate whose work built OraEarn.",
+        size=13,
+        color=CREAM,
     )
-    text(s, 0.55, 7.05, 8, 0.28, "OraEarn   ·   PRT681   ·   Group 4", size=12, color=MUTED)
-    text(s, 11.4, 7.05, 1.4, 0.28, "1", size=14, bold=True, color=TEAL, align=PP_ALIGN.RIGHT)
+    rect(s, 8.15, 0.7, 4.55, 5.85, NAVY_2)
+    people = [
+        ("Krishna Sapkota", "S395795", "Database administrator, tester"),
+        ("Dharma Bahadur Budhathoki", "S395172", "Developer, business analyst"),
+        ("Jenish Gurung", "S395321", "Business analyst, report writer"),
+        ("Suraj Khadka", "S394949", "Data analyst, database administrator"),
+    ]
+    y = 0.95
+    for name, sid, role in people:
+        text(s, 8.4, y, 4.05, 0.55, name, size=15, bold=True, color=WHITE)
+        text(s, 8.4, y + 0.48, 4.05, 0.24, sid, size=12, color=COPPER)
+        text(s, 8.4, y + 0.72, 4.05, 0.4, role, size=13, color=CREAM)
+        y += 1.35
+    text(s, 11.5, 6.95, 1.3, 0.28, "01", size=14, bold=True, color=COPPER, align=PP_ALIGN.RIGHT, font="Georgia")
     notes(
         s,
         """
@@ -301,27 +311,30 @@ def slide_architecture(prs):
     notes(
         s,
         """
-About 60 seconds. This is service-based MVC. Point left to right, then the return arrow, then Aura.
+About 60 seconds. Three layers, left to right, then the return line, then Aura.
 
-View: the React pages. There is no Razor page. The browser is the view.
-Controller: AuthController, JobsController, ShiftsController, ExpensesController, SavingsGoalsController, AnalyticsController, NotificationsController, AdminController. A protected action has Authorize. The JWT is checked before the method runs.
-Service: the controller calls a service. ShiftService, JobService, AuthService, ExpenseService, VisaComplianceService. The 48-hour check is in the service, before any insert.
-Model: the entity classes and ApplicationDbContext. EF Core is the data access.
-Database: PostgreSQL.
+Client: the React pages on port 5173. There is no Razor page. The browser does not open PostgreSQL.
+Presentation layer: AuthController, JobsController, ShiftsController, ExpensesController, SavingsGoalsController, AnalyticsController, NotificationsController, AdminController. A protected action has Authorize. The JWT is checked before the method runs.
+Business logic layer: the controller calls a service. ShiftService, JobService, AuthService, ExpenseService, VisaComplianceService. The 48-hour check is in the service, before any insert.
+Data access layer: ApplicationDbContext and EF Core. PostgreSQL is behind that. There is no repository class.
 
-The return arrow is the JSON response, back to the same page.
+The copper line is the JSON response, back up through each layer to the same page.
 
-Aura hangs off the service layer. PythonAdvisorClient calls port 8000. The page does not call Python itself.
+Aura hangs off the business side. PythonAdvisorClient calls port 8000. The page does not call Python. Aura does not open the database.
 
 SignalR is on the same API. The hub is authorized with the same JWT.
 """,
     )
 
 
-def figure_slide(prs, title, page, filename, spoken):
+def figure_slide(prs, title, page, filename, spoken, caption=None):
     s = new(prs)
     header(s, title, page)
-    place_picture(s, filename, 0.35, 1.12, 12.6, 5.75)
+    top = 1.28
+    if caption:
+        text(s, 0.5, 1.22, 12.3, 0.32, caption, size=15, color=MUTED)
+        top = 1.58
+    place_picture(s, filename, 0.35, top, 12.6, 6.95 - top)
     notes(s, spoken)
     return s
 
@@ -364,8 +377,8 @@ def slide_data(prs):
         5.28,
         11.7,
         1.3,
-        "An expense stores a category and a payment method. The category belongs to the user. A shift stores the job.\n"
-        "Foreign keys and delete rules are in ApplicationDbContext. The hourly rate stays on the job.\n"
+        "An expense stores a category and a payment method. A shift stores the job. The hourly rate stays on the job.\n"
+        "Roles are their own table, joined through User_Roles. A notification read is one row per user.\n"
         "48 hours is a sum of shift hours over the last 14 days. It is not a column.",
         size=16,
     )
@@ -381,6 +394,8 @@ Line 2: this is the correction if someone remembers an older diagram. An expense
 Line 3: savings goals belong to the user. Allocation is a percent of leftover pay. The live shift is ActiveShiftSession. Its UserId is unique, so only one clock-in is open.
 
 The migration is named NormalizeTo3NF. The 48-hour cap is VisaComplianceService, a query, not a column.
+
+Roles are not a column on the user. User_Roles joins a user to a role. User_Notification_Reads stores which notification that user has opened. Both are on the final ERD.
 """,
     )
 
@@ -488,9 +503,9 @@ def slide_process(prs):
         text(s, x + 0.14, 2.4, 2.05, 1.3, body, size=14)
         x += 2.52
     bottom = [
-        ("Agile / Scrum", "Weekly sprints.\nStories in Jira.\nA phase was done when you could use it."),
-        ("Task allocation", "Split by the roles on the title slide.\nFour people. The same four through week 9."),
-        ("Collaboration", "Git history tied to the work.\nWe planned the team early.\nThat is the mythical man-month."),
+        ("Agile / Scrum", "Five weekly sprints, weeks 5 to 9.\nA sprint goal, then the stories.\nDone when someone can use it."),
+        ("Grooming", "Login, then shifts, then the 48-hour rule, then Aura.\nIf the week slipped, the next goal changed."),
+        ("Mythical man-month", "Four people, week 5 through week 9.\nWe did not add a fifth.\nA new person costs teaching time."),
     ]
     x = 0.55
     for title, body in bottom:
@@ -501,20 +516,97 @@ def slide_process(prs):
     notes(
         s,
         """
-About 45 seconds.
+About 40 seconds. This slide is the process. The next slide is the practices.
 
-The order is deliberate. The visa check is a sum of shifts, so shifts existed before the rule. Aura has nothing to say until goals and hours exist.
+Point across the weeks. The order is the grooming. The visa check is a sum of shifts, so shifts existed before the rule. Aura has nothing to say until goals and hours exist. That is the iteration: each week is a sprint with a goal, and a story is done when someone can use it.
 
-We stayed four people. Adding someone in the last weeks would have been spent on teaching. A week moved a story. It did not grow the team.
+Mythical man-month: we stayed four people. Adding someone in week 8 or 9 would have been spent on teaching. A week moved a story. It did not grow the team.
+""",
+    )
 
-Some older Git uploads only say "Add files via upload". From the working practice, messages are feat: or fix:. Do not invent hour totals from a timesheet on this slide.
+
+def slide_practices(prs):
+    s = new(prs)
+    header(s, "Practices and the team", 14)
+    text(
+        s,
+        0.55,
+        1.2,
+        12.2,
+        0.32,
+        "Git, task names, an equal share, and why a customer would keep this team.",
+        size=15,
+        color=MUTED,
+    )
+    cols = [
+        (
+            "Git history",
+            "Form we keep\n"
+            "feat: what changed\n"
+            "fix: what broke\n\n"
+            "The log has both.\n"
+            "Early rows also say\n"
+            "Add files via upload.\n"
+            "That form stops.",
+        ),
+        (
+            "Task names",
+            "OE-101 Register account\n"
+            "As a / I want / So that\n"
+            "Acceptance criteria\n"
+            "on the story.\n\n"
+            "Board: Backlog, To Do,\n"
+            "In Progress, In Review,\n"
+            "UAT, Done.",
+        ),
+        (
+            "Equal share",
+            "Krishna: database, tests\n"
+            "Dharma: the build\n"
+            "Jenish: rules, report\n"
+            "Suraj: the numbers\n\n"
+            "Each person led stories.\n"
+            "The others took sub-tasks.\n"
+            "The plan gave the same hours.",
+        ),
+        (
+            "Keep this team",
+            "Yes.\n\n"
+            "The sprint changed.\n"
+            "The headcount did not.\n"
+            "Next work is the\n"
+            "48-hour test.\n"
+            "This team already\n"
+            "holds the code.",
+        ),
+    ]
+    x = 0.4
+    for title, body in cols:
+        card(s, x, 1.62, 3.15, 5.15)
+        text(s, x + 0.2, 1.8, 2.8, 0.7, title, size=18, bold=True)
+        text(s, x + 0.2, 2.55, 2.8, 3.9, body, size=14)
+        x += 3.25
+    notes(
+        s,
+        """
+About 70 seconds. Four cards. This is the development-process answer.
+
+Git: point at the form, then be honest. Working messages are feat: and fix:, for example feat: added the password toggle, and fix: for the expense screens. The history also contains "Add files via upload" from the GitHub website. Say that those are in the log, and the form we keep is type, colon, what changed. Do not invent a clean history.
+
+Tasks: the name is the key plus the title, OE-101 Register account. The body is As a, I want, So that, then acceptance criteria. Grooming ordered them by dependency, which is the week row on the previous slide. Prioritisation was that order, not whoever spoke last. The board is Backlog, To Do, In Progress, In Review, UAT, Done.
+
+Equal share: Krishna held the database and the tests. Dharma held the build. Jenish held the rules and the written report. Suraj held the numbers. Each person led stories. The other three took sub-tasks on those stories, so one person did not hold the week. The sprint plan gave every person the same hour share. Do not quote a timesheet total.
+
+Adaptive: when a dependency was missing, the story moved to the next sprint. The team size stayed four. That is the evolutionary practice. We changed the plan. We did not change the headcount. That is also the mythical man-month: a fifth person in the last weeks would have been teaching time.
+
+Customer: the answer is yes. The product is already in slices someone can use. The next job is known, the test that expects the 48-hour refusal. This team already holds the code, so continued development does not start with onboarding.
 """,
     )
 
 
 def slide_future(prs):
     s = new(prs)
-    header(s, "Strengths, improvements, and future", 14)
+    header(s, "Strengths, improvements, and future", 15)
     cols = [
         ("Key strengths", "The visa rule blocks the save.\nThe database is in third normal form.\nA clock-out updates other open tabs.\nThe demo data can be seeded again.\n29 tests are green."),
         ("Improve next", "A test that posts a shift past 48 hours.\nMore tests around approval and lockout.\nA pass over slow dashboard queries."),
@@ -540,7 +632,7 @@ Future: the API is already there for a phone client. Aura stays a separate Pytho
 
 def slide_demo(prs):
     s = new(prs)
-    header(s, "Live demo", 15)
+    header(s, "Live demo", 16)
     text(s, 0.55, 1.18, 12, 0.35, "OraEarn in action. Alice is the student. Bob is not on the 48-hour rule.", size=16, color=MUTED)
     cols = [
         ("Shifts", "Dharma", "Sign in as Alice.\nAdd a shift.\nThe calendar updates on the open tab."),
@@ -575,6 +667,17 @@ Close on questions. The next test we would write is the one that expects the 48-
     )
 
 
+def install_final_erd():
+    local = SHOT / "erd-final-source.png"
+    src = ERD_SRC if ERD_SRC.exists() else local
+    if not src.exists():
+        raise FileNotFoundError(f"Final ERD image not found: {src}")
+    with PilImage.open(src) as im:
+        rgb = im.convert("RGB")
+        rgb.save(local, "PNG")
+        rgb.save(SHOT / "diagram-erd.png", "PNG")
+
+
 def build():
     prs = Presentation()
     prs.slide_width = W
@@ -585,6 +688,7 @@ def build():
     import draw_figures
 
     draw_figures.main()
+    install_final_erd()
     slide_title(prs)
     slide_origin(prs)
     slide_product(prs)
@@ -597,16 +701,21 @@ def build():
         7,
         "diagram-erd.png",
         """
-About 50 seconds. This is the database the code uses.
+About 50 seconds. This is the final ERD. Point around the page, do not read every column.
 
-Users hold the email, PasswordHash, visa fields, and approval. A user has many jobs. A job has many shifts. The shift stores JobId. The hourly rate stays on the job.
+Roles connect to users through User_Roles. A role has a name and a normalized name. The join table holds UserId and RoleId.
 
-Categories belong to the user. An expense stores CategoryId and PaymentMethodId. Payment methods are Card, Cash, Bank transfer, and Other.
+Users hold the email, username, visa fields, the identity document, approval, and the refresh token. A user has many jobs. A job holds the hourly rate and an optional end date. A shift stores JobId, the times, the break, total hours, and the earned snapshot. The rate is not copied onto the shift as the job's rate column.
 
-Savings goals belong to the user. The live shift is one open clock-in, unique on UserId.
+Active shift sessions are the open clock-in. UserId there is unique, so only one is open.
 
-48 hours is a sum of shift hours over 14 days. It is not a table.
+Expense categories belong to the user. An expense stores CategoryId and PaymentMethodId, the amount, the date, and fixed or variable. Payment method names are unique.
+
+Savings goals belong to the user: target, current amount, and the allocation percent. User notification reads are one row for that user and that notification.
+
+48 hours is a sum of shift hours over 14 days. It is not a table on this diagram.
 """,
+        caption="Final schema. Eleven tables. The hourly rate stays on the job.",
     )
     figure_slide(
         prs,
@@ -659,12 +768,18 @@ The check is in ShiftService.CreateAsync, before SaveChanges.
     slide_security(prs)
     slide_analytics(prs)
     slide_process(prs)
+    slide_practices(prs)
     slide_future(prs)
     slide_demo(prs)
     for path in OUTS:
         path.parent.mkdir(parents=True, exist_ok=True)
-        prs.save(path)
-        print(f"Saved {path}")
+        try:
+            prs.save(path)
+            print(f"Saved {path}")
+        except PermissionError:
+            alt = path.with_name(path.stem + "-ink.pptx")
+            prs.save(alt)
+            print(f"Locked, saved {alt}")
     print(f"Slides: {len(prs.slides)}")
 
 
