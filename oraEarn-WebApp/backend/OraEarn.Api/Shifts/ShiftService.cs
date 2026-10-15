@@ -5,8 +5,11 @@ using OraEarn.Api.VisaCompliance;
 
 namespace OraEarn.Api.Shifts;
 
+// Shifts carry no UserId column (3NF): ownership is always resolved through Shift.Job.UserId,
+// which is why every query here joins the job or uses QueryExtensions.ForUser.
 public class ShiftService(ApplicationDbContext db, JobService jobService, VisaComplianceService visaComplianceService)
 {
+    /// <summary>Lists the user's shifts, newest first, optionally limited to an inclusive date range.</summary>
     public async Task<IReadOnlyList<ShiftResponse>> GetAllAsync(string userId, DateOnly? from, DateOnly? to)
     {
         var query = db.Shifts.AsNoTracking()
@@ -27,6 +30,7 @@ public class ShiftService(ApplicationDbContext db, JobService jobService, VisaCo
         return shifts.Select(Map).ToList();
     }
 
+    /// <summary>Returns one shift, or null if it does not exist or belongs to another user.</summary>
     public async Task<ShiftResponse?> GetByIdAsync(string userId, Guid id)
     {
         var shift = await db.Shifts.AsNoTracking()
@@ -36,6 +40,7 @@ public class ShiftService(ApplicationDbContext db, JobService jobService, VisaCo
         return shift is null ? null : Map(shift);
     }
 
+    /// <summary>Totals hours, earnings and shift count for the user over an optional date range.</summary>
     public async Task<ShiftSummaryResponse> GetSummaryAsync(string userId, DateOnly? from, DateOnly? to)
     {
         var query = db.Shifts.AsNoTracking().ForUser(userId);
@@ -57,9 +62,16 @@ public class ShiftService(ApplicationDbContext db, JobService jobService, VisaCo
             shifts.Count);
     }
 
+    /// <summary>
+    /// Logs a shift against one of the user's jobs. Throws <see cref="ArgumentException"/> for bad
+    /// input or an unknown job, and <see cref="InvalidOperationException"/> if it breaks the visa limit.
+    /// </summary>
     public async Task<ShiftResponse> CreateAsync(string userId, ShiftRequest request)
     {
         ValidateTimes(request.StartTime, request.EndTime);
+
+        // Looking the job up through the user doubles as the ownership check: another user's job id
+        // is reported as "not found" rather than revealing that it exists.
         var job = await jobService.GetEntityAsync(userId, request.JobId)
             ?? throw new ArgumentException("Job not found.");
 
@@ -70,6 +82,7 @@ public class ShiftService(ApplicationDbContext db, JobService jobService, VisaCo
             request.BreakMinutes,
             job.HourlyRate);
 
+        // The visa rule needs the calculated hours, so it runs after Calculate and before anything is saved.
         await visaComplianceService.ValidateShiftAsync(userId, hours, request.WorkDate);
 
         var shift = new Shift
@@ -90,6 +103,10 @@ public class ShiftService(ApplicationDbContext db, JobService jobService, VisaCo
         return Map(shift);
     }
 
+    /// <summary>
+    /// Edits a shift and recalculates its stored hours and pay at the current job rate.
+    /// Returns null if the shift is not the user's.
+    /// </summary>
     public async Task<ShiftResponse?> UpdateAsync(string userId, Guid id, ShiftRequest request)
     {
         ValidateTimes(request.StartTime, request.EndTime);
@@ -111,6 +128,8 @@ public class ShiftService(ApplicationDbContext db, JobService jobService, VisaCo
             request.BreakMinutes,
             job.HourlyRate);
 
+        // Passing the shift id excludes its old hours from the fortnight total; otherwise editing a
+        // shift would count it twice and could falsely block the change.
         await visaComplianceService.ValidateShiftAsync(userId, hours, request.WorkDate, shift.Id);
 
         shift.JobId = request.JobId;
@@ -126,6 +145,7 @@ public class ShiftService(ApplicationDbContext db, JobService jobService, VisaCo
         return Map(shift);
     }
 
+    /// <summary>Deletes one of the user's shifts. Returns false if it is not found or not theirs.</summary>
     public async Task<bool> DeleteAsync(string userId, Guid id)
     {
         var shift = await db.Shifts.Include(s => s.Job)
@@ -140,6 +160,7 @@ public class ShiftService(ApplicationDbContext db, JobService jobService, VisaCo
         return true;
     }
 
+    // Only identical times are rejected; an earlier end time is a valid overnight shift (see Shift.Calculate).
     private static void ValidateTimes(TimeOnly start, TimeOnly end)
     {
         if (start == end)
