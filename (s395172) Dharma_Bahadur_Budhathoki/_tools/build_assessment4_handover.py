@@ -222,10 +222,10 @@ def add_caption(doc: Document, text: str) -> None:
 
 
 FIGURES = [
-    ("figure-jira-earn-board.png", "The EARN board. My finished cards are in Done: login, the dashboard, jobs, and logging a shift."),
+    ("figure-jira-earn-board.png", "EARN board, 16 October 2026. Idea, To Do, and In Progress are empty. The cards are in Done. DB on a card is me, Dharma Bahadur Budhathoki (S395172)."),
     ("figure-diagram-architecture.png", "How the browser, the API, the database, and Aura sit next to each other."),
     ("figure-login-desktop.png", "The login screen I built. The eye on the password field shows what was typed. The password is still hashed before it is stored."),
-    ("figure-github-repo-live.png", "The GitHub repository for Group 4. This is the remote in the link on the cover."),
+    ("figure-github-repo-live.png", "Public repository PRT_681_SYDNEY_GROUP-4 on main. My latest commit is the week 12 timesheet. I am Dharma001 in the contributor list."),
     ("figure-swagger-api.png", "Swagger on port 5203. This is how I try an endpoint before I wire the React screen."),
     ("figure-diagram-team-erd.png", "The tables I code against. A shift points at a job. The job points at the user."),
     ("figure-jobs-desktop.png", "Jobs, which is the screen I copy when I add a new feature. The rate on the job is what a shift gets paid."),
@@ -502,6 +502,12 @@ def build() -> None:
         "Once the API has seeded the demo data, I sign in as alice@oraearn.local with User123! when I want the student. "
         "Bob uses the same password and is a citizen, so the 48-hour rule does not apply to him. "
         "The admin is admin@oraearn.local with Admin123!.",
+    )
+    add_p(
+        doc,
+        "The README at the top of the GitHub repository is the short version of this handover. "
+        "It carries the same GitHub link, the same Jira link, the three run commands, and the demo sign-ins. "
+        "My name on that page is Dharma Bahadur Budhathoki, student number S395172.",
     )
     add_figure(doc, "figure-jira-earn-board.png")
 
