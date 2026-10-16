@@ -1,15 +1,23 @@
-Dharma Bahadur Budhathoki (S395172) — folder map
+Dharma Bahadur Budhathoki (S395172) — Sydney Group 4
 
-This folder used to have four copies of the same report and three timesheets. Those extras are gone.
+Upload this file to Learnline
+- PRT681_Assessment4_SydneyGroup4_OraEarn_Handover.docx
 
-Keep at the top (for Learnline)
-- PRT681_Assessment4_Dharma_Bahadur_Budhathoki_S395172_OraEarn_Handover.docx
-- PRT681_Assessment2_Dharma_Bahadur_Budhathoki_S395172_OraEarn_Progress_Report.docx
+Keep with it
 - Individual Timesheets - Dharma Bahadur Budhathoki(S395172) - weeks 4-12.xlsx
+- PRT681_Assessment2_Dharma_Bahadur_Budhathoki_S395172_OraEarn_Progress_Report.docx (Assessment 2, already submitted)
 
-Weekly proof (open the week folder)
-- week2 … week12 each have NOTES.txt. Weeks 2–10 also have the screenshots used that week.
+Repository to mark
+- https://github.com/itsmekrishnaaaaaa/PRT_681_SYDNEY_GROUP-4
+- branch main, application in oraEarn-WebApp
 
-Also here
-- figures\     all pictures the Word report embeds (do not delete)
-- _tools\      old Python builders (not for upload)
+Jira
+- https://students-team-dh8zehye.atlassian.net/jira/core/projects/EARN/board
+
+Weekly proof
+- week2 to week12 each have NOTES.txt
+- Meeting logs are in week6, week7, week11, and week12
+
+Do not upload
+- figures\   pictures already inside the Word report
+- _tools\    old scripts

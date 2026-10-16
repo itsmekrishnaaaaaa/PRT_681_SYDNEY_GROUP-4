@@ -1,13 +1,13 @@
 Week 9 — Dharma Bahadur Budhathoki (S395172)
-6 hours. Assessment 2 pack: diagrams, live GitHub shot, Jira board, Swagger fix and tests.
+6 hours. Diagrams, the GitHub shot, the Jira board, and Swagger.
 
 Proof in this folder
-- figure-github-repo-live.png  (private repo, branch app-s395172, 50 commits)
+- figure-github-repo-live.png
 - figure-jira-earn-board.png
-- figure-swagger-api.png and figure-swagger-health.png  (GET /health = 200)
+- figure-swagger-api.png and figure-swagger-health.png (GET /health returned 200)
 - figure-swagger-aura.png
-- UML / architecture / sequence / Scrum Master diagrams
+- UML, architecture, sequence, and Scrum Master diagrams
 
-What I see
-- Swagger UI on :5203. Aura docs on :8000. GitHub logged-in tree.
-- No demo passwords in these pictures.
+The GitHub picture was taken while I was on branch app-s395172. The branch to mark is main: https://github.com/itsmekrishnaaaaaa/PRT_681_SYDNEY_GROUP-4
+
+No demo passwords are in these pictures.

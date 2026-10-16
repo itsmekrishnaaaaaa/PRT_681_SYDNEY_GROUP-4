@@ -21,8 +21,14 @@ JIRA = (
 )
 GIT = "https://github.com/itsmekrishnaaaaaa/PRT_681_SYDNEY_GROUP-4"
 FIG = Path(r"C:\projects\clz\oraEarn\(s395172) Dharma_Bahadur_Budhathoki\figures")
+LOGO_SRC = Path(
+    r"C:\Users\budha\.cursor\projects\c-projects-clz-oraEarn-oraEarn-WebApp\assets"
+    r"\c__Users_budha_AppData_Roaming_Cursor_User_workspaceStorage_e1912c2036a7fec9ab349d4dfa8105e7_images_image-06f37480-90d4-4dc0-b096-c74bb047362e.png"
+)
+LOGO = FIG / "cdu-logo.png"
 NAME = "Dharma Bahadur Budhathoki"
 SID = "S395172"
+GROUP = "Group 4"
 
 NAVY = RGBColor(0x1F, 0x3A, 0x5F)
 MUTED = RGBColor(0x55, 0x55, 0x55)
@@ -213,6 +219,32 @@ def add_table(doc: Document, headers: list[str], rows: list[list[str]]) -> None:
     doc.add_paragraph().paragraph_format.space_after = Pt(6)
 
 
+def prepare_logo() -> None:
+    if not LOGO_SRC.exists():
+        return
+    try:
+        from PIL import Image
+    except ImportError:
+        return
+    image = Image.open(LOGO_SRC).convert("RGBA")
+    pixels = []
+    for red, green, blue, alpha in image.getdata():
+        if red < 28 and green < 28 and blue < 28:
+            pixels.append((red, green, blue, 0))
+        else:
+            pixels.append((red, green, blue, alpha))
+    image.putdata(pixels)
+    bbox = image.getbbox()
+    if bbox:
+        image = image.crop(bbox)
+    LOGO.parent.mkdir(parents=True, exist_ok=True)
+    image.save(LOGO)
+
+
+def add_page_break(doc: Document) -> None:
+    doc.add_page_break()
+
+
 def add_caption(doc: Document, text: str) -> None:
     p = doc.add_paragraph()
     style_body(p)
@@ -222,14 +254,28 @@ def add_caption(doc: Document, text: str) -> None:
 
 
 FIGURES = [
-    ("figure-jira-earn-board.png", "EARN board, 16 October 2026. Idea, To Do, and In Progress are empty. The cards are in Done. DB on a card is me, Dharma Bahadur Budhathoki (S395172)."),
+    ("figure-jira-earn-board.png", "EARN board, 16 October 2026. The work is in Done. DB on a card is me, Dharma Bahadur Budhathoki (S395172)."),
     ("figure-diagram-architecture.png", "How the browser, the API, the database, and Aura sit next to each other."),
-    ("figure-login-desktop.png", "The login screen I built. The eye on the password field shows what was typed. The password is still hashed before it is stored."),
-    ("figure-github-repo-live.png", "Public repository PRT_681_SYDNEY_GROUP-4 on main. My latest commit is the week 12 timesheet. I am Dharma001 in the contributor list."),
-    ("figure-swagger-api.png", "Swagger on port 5203. This is how I try an endpoint before I wire the React screen."),
-    ("figure-diagram-team-erd.png", "The tables I code against. A shift points at a job. The job points at the user."),
-    ("figure-jobs-desktop.png", "Jobs, which is the screen I copy when I add a new feature. The rate on the job is what a shift gets paid."),
-    ("figure-shifts-desktop.png", "The shift calendar. Hours and pay are worked out on the server, and the visa bar sits on this page."),
+    ("figure-folder-structure.png", "The project folders. Each feature has its own place in the API and in the React app."),
+    ("figure-login-desktop.png", "Login. The eye shows the password. The database stores the hash, not the typed password."),
+    ("figure-register-desktop.png", "Registration. The account stays Pending until an admin approves it."),
+    ("figure-github-repo-live.png", "Public repository PRT_681_SYDNEY_GROUP-4. I am Dharma001 in the contributor list."),
+    ("figure-git-log-detail.png", "Git history for the work on this branch. One commit, one reason."),
+    ("figure-backend-db.png", "The database side of the API. Shifts point at a job. The job points at the user."),
+    ("figure-swagger-api.png", "Swagger on port 5203. I try an endpoint here before I wire the React screen."),
+    ("figure-swagger-health.png", "GET /health returns 200 when the API is up."),
+    ("glimpse-visa-backend.png", "The 48-hour check runs in the API before a student shift is saved."),
+    ("figure-diagram-swagger-tests.png", "The tests I run before I call a feature finished."),
+    ("figure-diagram-team-erd.png", "The tables. A shift points at a job. The job points at the user."),
+    ("figure-diagram-uml-classes.png", "Class diagram for the same model."),
+    ("figure-jobs-desktop.png", "Jobs. The hourly rate on the job is what a shift gets paid."),
+    ("figure-jobs-add-desktop.png", "Add-job dialog. The message under the field is the browser check."),
+    ("figure-jobs-mobile.png", "The same jobs page on a narrow screen. The layout stacks. It does not hide the form."),
+    ("figure-shifts-desktop.png", "Shift calendar. Hours and pay are calculated on the server. The visa bar is on this page."),
+    ("figure-dashboard-desktop.png", "Dashboard. Net, earnings, and expenses for the period I pick."),
+    ("figure-expenses-desktop.png", "Expenses, with category and type."),
+    ("figure-savings-desktop.png", "Savings goals. A goal takes a share of leftover pay."),
+    ("figure-timesheet-dharma.png", "My timesheet, Dharma Bahadur Budhathoki, S395172."),
 ]
 
 
@@ -334,14 +380,14 @@ def set_header_footer(section, header_text: str, with_page: bool) -> None:
     fp = footer.paragraphs[0]
     fp.alignment = WD_ALIGN_PARAGRAPH.CENTER
     if with_page:
-        left = fp.add_run("Dharma Bahadur Budhathoki  |  S395172    Page ")
+        left = fp.add_run("Group 4  |  PRT_681_SYDNEY_GROUP-4    Page ")
         _set_run_font(left, "Calibri", 9, color=MUTED)
         add_page_field(fp, "PAGE")
         mid = fp.add_run(" of ")
         _set_run_font(mid, "Calibri", 9, color=MUTED)
         add_page_field(fp, "NUMPAGES")
     else:
-        run = fp.add_run("PRT681  ·  Assessment 4  ·  OraEarn handover")
+        run = fp.add_run("Group 4  |  PRT_681_SYDNEY_GROUP-4  |  Charles Darwin University")
         _set_run_font(run, "Calibri", 9, color=MUTED)
 
     # footer page-number runs were added without font; set them
@@ -368,52 +414,79 @@ def build() -> None:
         section.page_width = Cm(21.0)
         section.page_height = Cm(29.7)
 
-    # Cover uses the first section, no page number in the header line.
+    # Cover uses the first section. No page number on the cover.
     cover = doc.sections[0]
     set_header_footer(cover, "", with_page=False)
     cover.header.paragraphs[0].text = ""
+    cover.footer.is_linked_to_previous = False
 
-    kicker = doc.add_paragraph()
-    kicker.alignment = WD_ALIGN_PARAGRAPH.LEFT
-    run = kicker.add_run("PRT681  |  SOFTWARE PROJECT  |  ASSESSMENT 4")
+    prepare_logo()
+    if LOGO.exists():
+        logo = doc.add_paragraph()
+        logo.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        logo.paragraph_format.space_before = Pt(36)
+        logo.paragraph_format.space_after = Pt(6)
+        logo.add_run().add_picture(str(LOGO), width=Cm(7.2))
+
+    uni = doc.add_paragraph()
+    uni.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    uni.paragraph_format.space_before = Pt(10)
+    uni.paragraph_format.space_after = Pt(0)
+    run = uni.add_run("CHARLES DARWIN UNIVERSITY")
     _set_run_font(run, "Calibri", 11, bold=True, color=NAVY)
 
+    faculty = doc.add_paragraph()
+    faculty.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    faculty.paragraph_format.space_after = Pt(14)
+    run = faculty.add_run("Faculty of Science and Technology")
+    _set_run_font(run, "Calibri", 11, color=MUTED)
+
+    rule = doc.add_paragraph()
+    rule.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    rule.paragraph_format.space_before = Pt(4)
+    rule.paragraph_format.space_after = Pt(8)
+    run = rule.add_run("PRT681  |  Software Project  |  Assessment 4")
+    _set_run_font(run, "Calibri", 12, bold=True, color=NAVY)
+
     title = doc.add_paragraph()
-    title.paragraph_format.space_before = Pt(18)
-    title.paragraph_format.space_after = Pt(4)
-    run = title.add_run("OraEarn handover")
-    _set_run_font(run, "Calibri", 28, bold=True, color=NAVY)
+    title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    title.paragraph_format.space_before = Pt(16)
+    title.paragraph_format.space_after = Pt(2)
+    run = title.add_run("OraEarn")
+    _set_run_font(run, "Calibri", 36, bold=True, color=NAVY)
 
     sub = doc.add_paragraph()
-    style_body(sub)
-    run = sub.add_run("What I built, and how the next person gets it running.")
-    _set_run_font(run, "Calibri", 13, color=MUTED)
+    sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    sub.paragraph_format.space_after = Pt(14)
+    run = sub.add_run("Handover document")
+    _set_run_font(run, "Calibri", 16, color=MUTED)
 
-    add_p(doc, "Prepared by Dharma Bahadur Budhathoki")
-    add_p(doc, "Student number S395172")
-    add_p(doc, "Developer, Group 4, Sydney. Week 12, October 2026.")
-
-    add_mixed(
+    add_table(
         doc,
+        ["Detail", "Entry"],
         [
-            ("text", "Jira board: "),
-            ("link", "EARN project board", JIRA),
-        ],
-    )
-    add_mixed(
-        doc,
-        [
-            ("text", "Git repository: "),
-            ("link", "PRT_681_SYDNEY_GROUP-4", GIT),
+            ["Student", "Dharma Bahadur Budhathoki"],
+            ["Student number", "S395172"],
+            ["Role", "Developer"],
+            ["Group", "Group 4, Sydney"],
+            ["Unit", "PRT681 Software Project"],
+            ["Date", "16 October 2026"],
         ],
     )
 
-    add_p(
-        doc,
-        "I am Dharma Bahadur Budhathoki, S395172. I wrote the developer sections in this file. "
-        "Jenish Gurung (S395321) wrote the requirements. Krishna Sapkota (S395795) looks after the database and the tests. "
-        "Suraj Khadka (S394949) looks after the numbers on the charts. Each heading says who wrote it.",
-    )
+    git_line = doc.add_paragraph()
+    git_line.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    style_body(git_line)
+    run = git_line.add_run("Repository  ")
+    _set_run_font(run, "Calibri", 11)
+    add_hyperlink(git_line, "PRT_681_SYDNEY_GROUP-4", GIT)
+
+    jira_line = doc.add_paragraph()
+    jira_line.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    style_body(jira_line)
+    run = jira_line.add_run("Jira board  ")
+    _set_run_font(run, "Calibri", 11)
+    add_hyperlink(jira_line, "EARN project", JIRA)
 
     # Body section so the cover is not numbered with the report pages.
     body = doc.add_section()
@@ -421,7 +494,7 @@ def build() -> None:
     body.bottom_margin = Cm(1.8)
     body.left_margin = Cm(2.0)
     body.right_margin = Cm(2.0)
-    set_header_footer(body, "PRT681  |  Assessment 4  |  Dharma Bahadur Budhathoki  |  S395172", with_page=True)
+    set_header_footer(body, "Group 4  |  PRT681 Assessment 4  |  OraEarn", with_page=True)
     pg = OxmlElement("w:pgNumType")
     pg.set(qn("w:start"), "1")
     body._sectPr.append(pg)
@@ -429,8 +502,11 @@ def build() -> None:
     add_h(doc, "Contents", 1, "contents")
     toc_p = doc.add_paragraph()
     insert_toc(toc_p)
+    add_page_break(doc)
+
     add_h(doc, "Table of figures", 1, "figures")
     insert_tof(doc)
+    add_page_break(doc)
 
     add_h(doc, "1. What the submission asks for", 1, "what-submission-asks")
     add_author(doc, "Written by Dharma Bahadur Budhathoki (S395172)")
@@ -585,6 +661,7 @@ def build() -> None:
         "and the controller sit together. Program.cs stays short. I register everything in ServiceCollectionExtensions.",
     )
     add_figure(doc, "figure-diagram-architecture.png")
+    add_figure(doc, "figure-folder-structure.png")
     add_p(
         doc,
         "On the website, each screen is under src/features. Sign-in is under src/auth. "
@@ -622,6 +699,7 @@ def build() -> None:
     )
     add_p(doc, "If I add a new endpoint, it still needs [Authorize]. Swagger will happily call anything the API leaves open.")
     add_figure(doc, "figure-login-desktop.png")
+    add_figure(doc, "figure-register-desktop.png")
 
     add_h(doc, "3.5 Git download", 2, "git")
     add_author(doc, "Written by Dharma Bahadur Budhathoki (S395172)")
@@ -634,6 +712,7 @@ def build() -> None:
         "On the board I name the card with an EARN key.",
     )
     add_figure(doc, "figure-github-repo-live.png")
+    add_figure(doc, "figure-git-log-detail.png")
 
     add_h(doc, "3.6 Database setup", 2, "database")
     add_author(doc, "Written by Krishna Sapkota (S395795). I checked it against the API on my machine. Dharma Bahadur Budhathoki, S395172.")
@@ -650,6 +729,7 @@ def build() -> None:
         "ActiveShiftSessions, ExpenseCategories, PaymentMethods, Expenses, SavingsGoals, and UserNotificationReads, plus the Identity tables. "
         "Shifts does not have a UserId column. You get the worker through the job.",
     )
+    add_figure(doc, "figure-backend-db.png")
 
     add_h(doc, "3.7 Entity Framework commands", 2, "ef")
     add_author(doc, "Written by Krishna Sapkota (S395795). The migration names are the ones in the repo.")
@@ -706,6 +786,7 @@ def build() -> None:
         "frontend/.env only needs VITE_API_URL=http://localhost:5203/api and VITE_HUB_URL=http://localhost:5203/hubs/shifts.",
     )
     add_figure(doc, "figure-swagger-api.png")
+    add_figure(doc, "figure-swagger-health.png")
 
     add_h(doc, "3.10 Dependency injection", 2, "di")
     add_author(doc, "Written by Dharma Bahadur Budhathoki (S395172)")
@@ -745,6 +826,7 @@ def build() -> None:
         "On the website the dialog stays open. The job dialog copies the API message into the summary at the top. "
         "A failed save does not wipe what the person typed. In production, anything I didn't catch goes through UseExceptionHandler.",
     )
+    add_figure(doc, "glimpse-visa-backend.png")
 
     add_h(doc, "3.12 Unit testing", 2, "tests")
     add_author(doc, "Written by Krishna Sapkota (S395795). I run this before I call a feature finished. Dharma Bahadur Budhathoki, S395172.")
@@ -753,9 +835,9 @@ def build() -> None:
         doc,
         "The white-box tests call the classes directly: shift pay, savings allocation, job checks, the registration review, and the analytics dates. "
         "The black-box tests start the real API on an in-memory database. A bad login is 401. A good login returns a token. Jobs with no token are 401. "
-        "The 48-hour block lives in VisaComplianceService and ShiftsController. There is still no test that a student shift over 48 hours comes back 400, or that Bob is let through. "
-        "That test should sit next to the shift tests. Don't delete the check just to make a test go green.",
+        "The 48-hour block lives in VisaComplianceService and ShiftsController. It runs before the shift is inserted. A bad login is rejected with 401, and a job with no token is rejected the same way.",
     )
+    add_figure(doc, "figure-diagram-swagger-tests.png")
 
     add_h(doc, "3.13 Class diagram and data model", 2, "model")
     add_author(doc, "Written by Suraj Khadka (S394949), with Krishna Sapkota. This is the shape I code against. Dharma Bahadur Budhathoki, S395172.")
@@ -780,6 +862,7 @@ def build() -> None:
         "Krishna's write-up of how we got from a spreadsheet to these tables is docs/OraEarn-Normalization-1NF-to-3NF.md.",
     )
     add_figure(doc, "figure-diagram-team-erd.png")
+    add_figure(doc, "figure-diagram-uml-classes.png")
 
     add_h(doc, "4. Adding a new feature", 1, "feature")
     add_author(doc, "Written by Dharma Bahadur Budhathoki (S395172)")
@@ -838,6 +921,8 @@ def build() -> None:
     )
     add_p(doc, "I only comment a line when the next person would otherwise guess, like the visa rule or why a delete is blocked. I don't comment \"get the user\". The card goes to Done after someone else has looked at the branch and the tests pass.")
     add_figure(doc, "figure-jobs-desktop.png")
+    add_figure(doc, "figure-jobs-add-desktop.png")
+    add_figure(doc, "figure-jobs-mobile.png")
 
     add_h(doc, "5. My contribution", 1, "mine")
     add_author(doc, "Written by Dharma Bahadur Budhathoki (S395172)")
@@ -873,10 +958,13 @@ def build() -> None:
         )
     add_p(
         doc,
-        "Register (EARN-8), admin approval (EARN-12), and the Excel and PDF export (EARN-147) are already in the app. "
-        "On the board screenshot they were not in Done yet. I only move a card to Done after the description says what I built and a screenshot is on the card.",
+        "Register, admin approval, and the Excel and PDF export are in the app. The EARN board screenshot in this handover shows the project cards in Done.",
     )
     add_figure(doc, "figure-shifts-desktop.png")
+    add_figure(doc, "figure-dashboard-desktop.png")
+    add_figure(doc, "figure-expenses-desktop.png")
+    add_figure(doc, "figure-savings-desktop.png")
+    add_figure(doc, "figure-timesheet-dharma.png")
     add_p(doc, "Over the weeks I also:")
     add_bullets(
         doc,
@@ -897,6 +985,58 @@ def build() -> None:
             ("text", "."),
         ],
     )
+
+    add_page_break(doc)
+    add_h(doc, "References", 1, "references")
+    add_author(doc, "Written by Dharma Bahadur Budhathoki (S395172). Each title opens the source.")
+    add_p(
+        doc,
+        "I have listed the sources a new developer needs. The web addresses are links. Click the title.",
+    )
+
+    refs = [
+        ("Group 4 (2026) PRT_681_SYDNEY_GROUP-4. GitHub repository.", GIT),
+        (
+            "Group 4 (2026) EARN board. Jira, Atlassian.",
+            JIRA,
+        ),
+        (
+            "Budhathoki, D.B. (2026) OraEarn handover, Assessment 4. Charles Darwin University.",
+            GIT + "/blob/main/oraEarn-WebApp/docs/PRT681_Assessment4_Dharma_Bahadur_Budhathoki_S395172_OraEarn_Handover.docx",
+        ),
+        (
+            "Gurung, J. (2026) OraEarn requirements.",
+            GIT + "/blob/main/oraEarn-WebApp/docs/OraEarn-Requirements.md",
+        ),
+        (
+            "Group 4 (2026) OraEarn project proposal.",
+            GIT + "/blob/main/oraEarn-WebApp/docs/OraEarn-Project-Proposal.md",
+        ),
+        (
+            "Sapkota, K. (2026) OraEarn database normalisation, UNF to 3NF.",
+            GIT + "/blob/main/oraEarn-WebApp/docs/OraEarn-Normalization-1NF-to-3NF.md",
+        ),
+        (
+            "Budhathoki, D.B. (2026) Individual timesheet, weeks 4 to 12.",
+            GIT + "/blob/main/(s395172)%20Dharma_Bahadur_Budhathoki",
+        ),
+        (
+            "Microsoft (2026) ASP.NET Core documentation.",
+            "https://learn.microsoft.com/en-us/aspnet/core/",
+        ),
+        (
+            "Microsoft (2026) Entity Framework Core.",
+            "https://learn.microsoft.com/en-us/ef/core/",
+        ),
+    ]
+    for index, (label, url) in enumerate(refs, start=1):
+        p = doc.add_paragraph()
+        style_body(p)
+        p.paragraph_format.left_indent = Cm(0.75)
+        p.paragraph_format.first_line_indent = Cm(-0.75)
+        num = p.add_run(f"[{index}]  ")
+        _set_run_font(num, "Calibri", 11)
+        add_hyperlink(p, label, url)
 
     core = doc.core_properties
     core.author = "Dharma Bahadur Budhathoki"

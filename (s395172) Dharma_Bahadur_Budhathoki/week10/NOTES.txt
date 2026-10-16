@@ -1,15 +1,11 @@
 Week 10 — Dharma Bahadur Budhathoki (S395172)
-6 hours. Final Learnline pack under my name. Timesheet now weeks 4–10 (41.5 hours).
+6 hours. Assessment 2 pack and the timesheet screenshot for that week.
 
 Proof in this folder
-- PRT681_Assessment2_Dharma_Bahadur_Budhathoki_S395172_OraEarn_Progress_Report.docx
-- Individual Timesheets ... weeks 4-10.xlsx
-- figure-timesheet-dharma.png
+- figure-timesheet-dharma.png (the sheet as it stood in week 10, weeks 4–10)
 - figure-github-repo-live.png
 
-What I see
-- One report, one timesheet, my student ID on the file names.
-- Upload zip is in Downloads: PRT681_Assessment2_Dharma_Bahadur_Budhathoki_S395172_Learnline.zip
+The timesheet to submit now is the workbook at the top of this folder: Individual Timesheets - Dharma Bahadur Budhathoki(S395172) - weeks 4-12.xlsx
 
-Note
-- Clone app-s395172, not main. Invite the lecturer to the private GitHub repo.
+The repository to clone is main, not app-s395172.
+https://github.com/itsmekrishnaaaaaa/PRT_681_SYDNEY_GROUP-4
