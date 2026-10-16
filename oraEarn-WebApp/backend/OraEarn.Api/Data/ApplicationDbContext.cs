@@ -45,6 +45,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.HasOne(s => s.Job)
                 .WithMany(j => j.Shifts)
                 .HasForeignKey(s => s.JobId)
+                // Keep the shift history if someone tries to delete a job that still has shifts.
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
@@ -84,6 +85,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.HasOne(e => e.Category)
                 .WithMany(c => c.Expenses)
                 .HasForeignKey(e => e.CategoryId)
+                // An expense is history. Deleting its category or payment method must not delete the row.
                 .OnDelete(DeleteBehavior.Restrict);
             entity.HasOne(e => e.PaymentMethod)
                 .WithMany(p => p.Expenses)

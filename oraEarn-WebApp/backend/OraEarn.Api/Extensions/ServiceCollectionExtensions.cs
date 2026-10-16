@@ -151,6 +151,7 @@ public static class ServiceCollectionExtensions
         var jwt = configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>()
             ?? throw new InvalidOperationException("JWT settings are missing.");
 
+        // Refuse to boot with a short or placeholder key. A running API with a weak secret is worse than one that will not start.
         if (string.IsNullOrWhiteSpace(jwt.Secret) || jwt.Secret.Length < 32)
         {
             throw new InvalidOperationException("Jwt:Secret must be at least 32 characters. Set Jwt__Secret.");

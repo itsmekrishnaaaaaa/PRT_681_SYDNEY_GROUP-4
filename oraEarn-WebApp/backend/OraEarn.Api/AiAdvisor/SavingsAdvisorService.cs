@@ -17,6 +17,7 @@ public class SavingsAdvisorService(
         var analytics = await analyticsService.GetAnalyticsAsync(userId);
         var visa = await visaComplianceService.GetStatusAsync(userId);
 
+        // Aura only receives this user's own name, visa status, and savings numbers. It does not see other people.
         var context = new PythonAdvisorContext(
             new PythonUserContext(
                 user?.FirstName ?? "",

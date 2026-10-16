@@ -13,6 +13,7 @@ namespace OraEarn.Api.VisaCompliance;
 
 public class VisaComplianceService(ApplicationDbContext db)
 {
+    // Student-visa fortnight cap during study. It is a rule here, not a column on the user.
     public const decimal StudentFortnightHourLimit = 48m;
     private const decimal NearLimitRatio = 0.85m;
 

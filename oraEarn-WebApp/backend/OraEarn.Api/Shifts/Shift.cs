@@ -25,12 +25,14 @@ public class Shift
     {
         var start = workDate.ToDateTime(startTime);
         var end = workDate.ToDateTime(endTime);
+        // A shift that ends at or before it starts crossed midnight, so the end is the next day.
         if (end <= start)
         {
             end = end.AddDays(1);
         }
 
         var hours = Math.Max(0, (decimal)(end - start).TotalHours - breakMinutes / 60m);
+        // Rounded to cents and stored on the row so a later rate change does not rewrite this pay.
         var earned = Math.Round(hours * hourlyRate, 2);
         return (Math.Round(hours, 2), earned);
     }
