@@ -1,0 +1,13 @@
+Week 11 — Dharma Bahadur Budhathoki (S395172)
+6 hours. Home page, shared black-and-white styles, and savings taken from leftover pay.
+
+What I did
+- Updated the home page and kept colours in one stylesheet.
+- Savings goals now use leftover pay after expenses. Migration: AllocateSavingsFromNetMoney.
+- Savings page and dialog show the new allocation.
+- Login, register, and the layout match the updated home page.
+- Checked the backend run script, development settings, and the savings tests.
+
+Proof
+- Git commit on 13 Oct 2026: home page, index.css, savings services, and the migration.
+- Timesheet file: Individual Timesheets - Dharma Bahadur Budhathoki(S395172) - weeks 4-11.xlsx

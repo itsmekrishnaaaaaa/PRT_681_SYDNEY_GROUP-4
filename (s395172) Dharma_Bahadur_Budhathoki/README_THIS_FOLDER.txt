@@ -4,10 +4,10 @@ This folder used to have four copies of the same report and three timesheets. Th
 
 Keep at the top (for Learnline)
 - PRT681_Assessment2_Dharma_Bahadur_Budhathoki_S395172_OraEarn_Progress_Report.docx
-- Individual Timesheets - Dharma Bahadur Budhathoki(S395172) - weeks 4-10.xlsx
+- Individual Timesheets - Dharma Bahadur Budhathoki(S395172) - weeks 4-11.xlsx
 
 Weekly proof (open the week folder)
-- week2 … week10 each have NOTES.txt and the screenshots I actually used that week.
+- week2 … week11 each have NOTES.txt. Weeks 2–10 also have the screenshots used that week.
 
 Also here
 - figures\     all pictures the Word report embeds (do not delete)
