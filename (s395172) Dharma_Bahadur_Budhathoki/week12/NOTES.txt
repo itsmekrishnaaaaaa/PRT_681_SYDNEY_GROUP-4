@@ -1,0 +1,13 @@
+Week 12 — Dharma Bahadur Budhathoki (S395172)
+6 hours. Assessment 4 handover for the next developer.
+
+What I did
+- Wrote the setup guide: tools, architecture, authentication, database, Entity Framework, dependency injection, and exception handling.
+- Wrote the guide for adding a feature in the same shape as jobs.
+- Added the GitHub repository URL and the EARN Jira board link.
+- Reviewed Done cards EARN-105, EARN-106, EARN-107, and EARN-70.
+- Checked the Learnline pack: handover, timesheet through week 11, and cards still outside Done.
+
+Proof
+- oraEarn-WebApp/docs/OraEarn-Assessment4-Handover.md
+- Timesheet file: Individual Timesheets - Dharma Bahadur Budhathoki(S395172) - weeks 4-12.xlsx
